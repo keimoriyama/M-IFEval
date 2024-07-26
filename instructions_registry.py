@@ -76,4 +76,46 @@ EN_INSTRUCTION_DICT = {
     _STARTEND + "quotation": en_instructions.QuotationChecker,
 }
 
-INSTRUCTION_DICT = {"en:" + k: v for k, v in EN_INSTRUCTION_DICT.items()}
+JA_INSTRUCTION_DICT = {
+    _KEYWORD + "existence": en_instructions.KeywordChecker,
+    _KEYWORD + "frequency": en_instructions.KeywordFrequencyChecker,
+    # TODO(jeffreyzhou): make a proper set of sentences to choose from
+    # _KEYWORD + "key_sentences": instructions.KeySentenceChecker,
+    _KEYWORD + "forbidden_words": en_instructions.ForbiddenWords,
+    _KEYWORD + "letter_frequency": en_instructions.LetterFrequencyChecker,
+    _LANGUAGE + "response_language": en_instructions.ResponseLanguageChecker,
+    _LENGTH + "number_sentences": en_instructions.NumberOfSentences,
+    _LENGTH + "number_paragraphs": en_instructions.ParagraphChecker,
+    _LENGTH + "number_words": en_instructions.NumberOfWords,
+    _LENGTH + "nth_paragraph_first_word": en_instructions.ParagraphFirstWordCheck,
+    _CONTENT + "number_placeholders": en_instructions.PlaceholderChecker,
+    _CONTENT + "postscript": en_instructions.PostscriptChecker,
+    _FORMAT + "number_bullet_lists": en_instructions.BulletListChecker,
+    # TODO(jeffreyzhou): Pre-create paragraph or use prompt to replace
+    # _CONTENT + "rephrase_paragraph": instructions.RephraseParagraph,
+    _FORMAT + "constrained_response": en_instructions.ConstrainedResponseChecker,
+    _FORMAT + "number_highlighted_sections": (
+        en_instructions.HighlightSectionChecker),
+    _FORMAT + "multiple_sections": en_instructions.SectionChecker,
+    # TODO(tianjianlu): Re-enable rephrasing with preprocessing the message.
+    # _FORMAT + "rephrase": instructions.RephraseChecker,
+    _FORMAT + "json_format": en_instructions.JsonFormat,
+    _FORMAT + "title": en_instructions.TitleChecker,
+    # TODO(tianjianlu): Re-enable with specific prompts.
+    # _MULTITURN + "constrained_start": instructions.ConstrainedStartChecker,
+    _COMBINATION + "two_responses": en_instructions.TwoResponsesChecker,
+    _COMBINATION + "repeat_prompt": en_instructions.RepeatPromptThenAnswer,
+    _STARTEND + "end_checker": en_instructions.EndChecker,
+    _CHANGE_CASES
+    + "capital_word_frequency": en_instructions.CapitalWordFrequencyChecker,
+    _CHANGE_CASES
+    + "english_capital": en_instructions.CapitalLettersEnglishChecker,
+    _CHANGE_CASES
+    + "english_lowercase": en_instructions.LowercaseLettersEnglishChecker,
+    _PUNCTUATION + "no_comma": en_instructions.CommaChecker,
+    _STARTEND + "quotation": en_instructions.QuotationChecker,
+}
+
+INSTRUCTION_DICT = {}
+INSTRUCTION_DICT.update({"en:" + k: v for k, v in EN_INSTRUCTION_DICT.items()})
+INSTRUCTION_DICT.update({"ja:" + k: v for k, v in JA_INSTRUCTION_DICT.items()})
