@@ -14,7 +14,7 @@
 # limitations under the License.
 
 """Registry of all instructions."""
-from instruction_following_eval import instructions
+from instructions import en_instructions
 
 _KEYWORD = "keywords:"
 
@@ -36,141 +36,44 @@ _CHANGE_CASES = "change_case:"
 
 _PUNCTUATION = "punctuation:"
 
-INSTRUCTION_DICT = {
-    _KEYWORD + "existence": instructions.KeywordChecker,
-    _KEYWORD + "frequency": instructions.KeywordFrequencyChecker,
+EN_INSTRUCTION_DICT = {
+    _KEYWORD + "existence": en_instructions.KeywordChecker,
+    _KEYWORD + "frequency": en_instructions.KeywordFrequencyChecker,
     # TODO(jeffreyzhou): make a proper set of sentences to choose from
     # _KEYWORD + "key_sentences": instructions.KeySentenceChecker,
-    _KEYWORD + "forbidden_words": instructions.ForbiddenWords,
-    _KEYWORD + "letter_frequency": instructions.LetterFrequencyChecker,
-    _LANGUAGE + "response_language": instructions.ResponseLanguageChecker,
-    _LENGTH + "number_sentences": instructions.NumberOfSentences,
-    _LENGTH + "number_paragraphs": instructions.ParagraphChecker,
-    _LENGTH + "number_words": instructions.NumberOfWords,
-    _LENGTH + "nth_paragraph_first_word": instructions.ParagraphFirstWordCheck,
-    _CONTENT + "number_placeholders": instructions.PlaceholderChecker,
-    _CONTENT + "postscript": instructions.PostscriptChecker,
-    _FORMAT + "number_bullet_lists": instructions.BulletListChecker,
+    _KEYWORD + "forbidden_words": en_instructions.ForbiddenWords,
+    _KEYWORD + "letter_frequency": en_instructions.LetterFrequencyChecker,
+    _LANGUAGE + "response_language": en_instructions.ResponseLanguageChecker,
+    _LENGTH + "number_sentences": en_instructions.NumberOfSentences,
+    _LENGTH + "number_paragraphs": en_instructions.ParagraphChecker,
+    _LENGTH + "number_words": en_instructions.NumberOfWords,
+    _LENGTH + "nth_paragraph_first_word": en_instructions.ParagraphFirstWordCheck,
+    _CONTENT + "number_placeholders": en_instructions.PlaceholderChecker,
+    _CONTENT + "postscript": en_instructions.PostscriptChecker,
+    _FORMAT + "number_bullet_lists": en_instructions.BulletListChecker,
     # TODO(jeffreyzhou): Pre-create paragraph or use prompt to replace
     # _CONTENT + "rephrase_paragraph": instructions.RephraseParagraph,
-    _FORMAT + "constrained_response": instructions.ConstrainedResponseChecker,
+    _FORMAT + "constrained_response": en_instructions.ConstrainedResponseChecker,
     _FORMAT + "number_highlighted_sections": (
-        instructions.HighlightSectionChecker),
-    _FORMAT + "multiple_sections": instructions.SectionChecker,
+        en_instructions.HighlightSectionChecker),
+    _FORMAT + "multiple_sections": en_instructions.SectionChecker,
     # TODO(tianjianlu): Re-enable rephrasing with preprocessing the message.
     # _FORMAT + "rephrase": instructions.RephraseChecker,
-    _FORMAT + "json_format": instructions.JsonFormat,
-    _FORMAT + "title": instructions.TitleChecker,
+    _FORMAT + "json_format": en_instructions.JsonFormat,
+    _FORMAT + "title": en_instructions.TitleChecker,
     # TODO(tianjianlu): Re-enable with specific prompts.
     # _MULTITURN + "constrained_start": instructions.ConstrainedStartChecker,
-    _COMBINATION + "two_responses": instructions.TwoResponsesChecker,
-    _COMBINATION + "repeat_prompt": instructions.RepeatPromptThenAnswer,
-    _STARTEND + "end_checker": instructions.EndChecker,
+    _COMBINATION + "two_responses": en_instructions.TwoResponsesChecker,
+    _COMBINATION + "repeat_prompt": en_instructions.RepeatPromptThenAnswer,
+    _STARTEND + "end_checker": en_instructions.EndChecker,
     _CHANGE_CASES
-    + "capital_word_frequency": instructions.CapitalWordFrequencyChecker,
+    + "capital_word_frequency": en_instructions.CapitalWordFrequencyChecker,
     _CHANGE_CASES
-    + "english_capital": instructions.CapitalLettersEnglishChecker,
+    + "english_capital": en_instructions.CapitalLettersEnglishChecker,
     _CHANGE_CASES
-    + "english_lowercase": instructions.LowercaseLettersEnglishChecker,
-    _PUNCTUATION + "no_comma": instructions.CommaChecker,
-    _STARTEND + "quotation": instructions.QuotationChecker,
+    + "english_lowercase": en_instructions.LowercaseLettersEnglishChecker,
+    _PUNCTUATION + "no_comma": en_instructions.CommaChecker,
+    _STARTEND + "quotation": en_instructions.QuotationChecker,
 }
 
-INSTRUCTION_CONFLICTS = {
-    _KEYWORD + "existence": {_KEYWORD + "existence"},
-    _KEYWORD + "frequency": {_KEYWORD + "frequency"},
-    # TODO(jeffreyzhou): make a proper set of sentences to choose from
-    # _KEYWORD + "key_sentences": instructions.KeySentenceChecker,
-    _KEYWORD + "forbidden_words": {_KEYWORD + "forbidden_words"},
-    _KEYWORD + "letter_frequency": {_KEYWORD + "letter_frequency"},
-    _LANGUAGE
-    + "response_language": {
-        _LANGUAGE + "response_language",
-        _FORMAT + "multiple_sections",
-        _KEYWORD + "existence",
-        _KEYWORD + "frequency",
-        _KEYWORD + "forbidden_words",
-        _STARTEND + "end_checker",
-        _CHANGE_CASES + "english_capital",
-        _CHANGE_CASES + "english_lowercase",
-    },
-    _LENGTH + "number_sentences": {_LENGTH + "number_sentences"},
-    _LENGTH + "number_paragraphs": {
-        _LENGTH + "number_paragraphs",
-        _LENGTH + "nth_paragraph_first_word",
-        _LENGTH + "number_sentences",
-        _LENGTH + "nth_paragraph_first_word",
-    },
-    _LENGTH + "number_words": {_LENGTH + "number_words"},
-    _LENGTH + "nth_paragraph_first_word": {
-        _LENGTH + "nth_paragraph_first_word",
-        _LENGTH + "number_paragraphs",
-    },
-    _CONTENT + "number_placeholders": {_CONTENT + "number_placeholders"},
-    _CONTENT + "postscript": {_CONTENT + "postscript"},
-    _FORMAT + "number_bullet_lists": {_FORMAT + "number_bullet_lists"},
-    # TODO(jeffreyzhou): Pre-create paragraph or use prompt to replace
-    # _CONTENT + "rephrase_paragraph": instructions.RephraseParagraph,
-    _FORMAT + "constrained_response": set(INSTRUCTION_DICT.keys()),
-    _FORMAT
-    + "number_highlighted_sections": {_FORMAT + "number_highlighted_sections"},
-    _FORMAT
-    + "multiple_sections": {
-        _FORMAT + "multiple_sections",
-        _LANGUAGE + "response_language",
-        _FORMAT + "number_highlighted_sections",
-    },
-    # TODO(tianjianlu): Re-enable rephrasing with preprocessing the message.
-    # _FORMAT + "rephrase": instructions.RephraseChecker,
-    _FORMAT
-    + "json_format": set(INSTRUCTION_DICT.keys()).difference(
-        {_KEYWORD + "forbidden_words", _KEYWORD + "existence"}
-    ),
-    _FORMAT + "title": {_FORMAT + "title"},
-    # TODO(tianjianlu): Re-enable with specific prompts.
-    # _MULTITURN + "constrained_start": instructions.ConstrainedStartChecker,
-    _COMBINATION
-    + "two_responses": set(INSTRUCTION_DICT.keys()).difference({
-        _KEYWORD + "forbidden_words",
-        _KEYWORD + "existence",
-        _LANGUAGE + "response_language",
-        _FORMAT + "title",
-        _PUNCTUATION + "no_comma"
-    }),
-    _COMBINATION + "repeat_prompt": set(INSTRUCTION_DICT.keys()).difference({
-        _KEYWORD + "existence",
-        _FORMAT + "title",
-        _PUNCTUATION + "no_comma"
-    }),
-    _STARTEND + "end_checker": {_STARTEND + "end_checker"},
-    _CHANGE_CASES + "capital_word_frequency": {
-        _CHANGE_CASES + "capital_word_frequency",
-        _CHANGE_CASES + "english_lowercase",
-        _CHANGE_CASES + "english_capital",
-    },
-    _CHANGE_CASES + "english_capital": {_CHANGE_CASES + "english_capital"},
-    _CHANGE_CASES + "english_lowercase": {
-        _CHANGE_CASES + "english_lowercase",
-        _CHANGE_CASES + "english_capital",
-    },
-    _PUNCTUATION + "no_comma": {_PUNCTUATION + "no_comma"},
-    _STARTEND + "quotation": {_STARTEND + "quotation", _FORMAT + "title"},
-}
-
-
-def conflict_make(conflicts):
-  """Makes sure if A conflicts with B, B will conflict with A.
-
-  Args:
-    conflicts: Dictionary of potential conflicts where key is instruction id
-      and value is set of instruction ids that it conflicts with.
-
-  Returns:
-    Revised version of the dictionary. All instructions conflict with
-    themselves. If A conflicts with B, B will conflict with A.
-  """
-  for key in conflicts:
-    for k in conflicts[key]:
-      conflicts[k].add(key)
-    conflicts[key].add(key)
-  return conflicts
+INSTRUCTION_DICT = {"en:" + k: v for k, v in EN_INSTRUCTION_DICT.items()}
