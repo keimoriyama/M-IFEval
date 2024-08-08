@@ -379,7 +379,7 @@ class NumberedListChecker(Instruction):
     return num_numbered_lists == self._num_items
   
 
-class ConstrainedResponseChecker(Instruction):
+class zResponseChecker(Instruction):
   """Checks the constrained response."""
 
   def build_description(self):
@@ -773,8 +773,11 @@ class KeywordChecker(Instruction):
 
   def check_following(self, value):
     """Check if the response contain the expected keywords."""
+    tokens = ja_instructions_util.tokenizing_texts(value)
+    val_words = [token.surface for token in tokens]
+
     for keyword in self._keywords:
-      if not re.search(keyword, value):
+      if not keyword in val_words:
         return False
     return True
 
@@ -837,7 +840,10 @@ class KeywordFrequencyChecker(Instruction):
 
   def check_following(self, value):
     """Checks if the response contain the keyword with required frequency."""
-    actual_occurrences = len(re.findall(self._keyword, value))
+    tokens = ja_instructions_util.tokenizing_texts(value)
+    val_words = [token.surface for token in tokens]
+    dict_val = collections.Counter(val_words)
+    actual_occurrences = dict_val[self._keyword]
 
     if self._comparison_relation == _COMPARISON_RELATION[0]:
       return actual_occurrences < self._frequency
@@ -1754,7 +1760,7 @@ class NominalEndingChecker(Instruction):
     value = re.sub(quote_pattern_2, '', value)
 
     tokens = ja_instructions_util.tokenizing_texts(value)
-    tokens = list(tokens))
+    tokens = list(tokens)
 
     noun_count = 0
     for i in range(1, len(tokens)):
