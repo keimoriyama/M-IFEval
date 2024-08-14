@@ -148,53 +148,25 @@
 {"key":148,"prompt":"ご飯を食べる時についてしまう様々な衣類の汚れを落とす方法について3段落で説明してください。ただし、「色落ち」という単語を4回以上は用いてください。また、それぞれの段落をマークダウンの区切り記号: *** で区切ってください。","instruction_id_list":["ja:keywords:frequency","ja:length_constraints:number_paragraphs"],"kwargs":[{"relation":"以上","keyword":"色落ち","frequency":4},{"num_paragraphs":3}]}
 {"key":149,"prompt":"ニューヨークのタイムズスクエアの見どころについて、読点「、」を使用しないで教えてください。ただし、応答の最後に「他に質問したい事はございますか。」と出力し、その後に他の言葉を続けないでください。","instruction_id_list":["ja:punctuation:no_comma","ja:startend:end_checker"],"kwargs":[{},{"end_phrase":"他に質問したい事はございますか。"}]}
 {"key":150,"prompt":"世界各地の歴史的なお城について、それぞれの違いがわかるように説明してください。ただし、カタカナを一文字も使わないで答えてください。また、応答は5段落の文章で、それぞれの段落をマークダウンの区切り記号: *** で区切って出力してください。","instruction_id_list":["ja:length_constraints:number_paragraphs","ja:letters:no_katakana"],"kwargs":[{"num_paragraphs":5},{}]}
-{"key":151,"prompt":"","instruction_id_list":["ja:startend:end_checker","ja:combination:repeat_prompt"],"kwargs":[{"end_phrase":""},{"prompt_to_repeat":""}]}
-{"key":152,"prompt":"","instruction_id_list":["ja:letters:no_katakana","ja:detectable_content:postscript"],"kwargs":[{},{"postscript_marker":""}]}
-{"key":153,"prompt":"","instruction_id_list":["ja:combination:repeat_prompt","ja:detectable_format:number_numbered_lists"],"kwargs":[{"prompt_to_repeat":""},{"num_items":}]}
-{"key":154,"prompt":"","instruction_id_list":["ja:detectable_content:postscript","ja:letters:no_hiragana"],"kwargs":[{"postscript_marker":""},{}]}
-{"key":155,"prompt":"","instruction_id_list":["ja:detectable_format:number_numbered_lists","ja:punctuation:no_period"],"kwargs":[{"num_items":},{}]}
-{"key":156,"prompt":"","instruction_id_list":["ja:letters:no_hiragana","ja:startend:quotation"],"kwargs":[{},{}]}
-{"key":157,"prompt":"","instruction_id_list":["ja:punctuation:no_period","ja:letters:furigana"],"kwargs":[{},{}]}
-{"key":158,"prompt":"","instruction_id_list":["ja:startend:quotation","ja:letters:katakana_only"],"kwargs":[{},{}]}
-{"key":159,"prompt":"","instruction_id_list":["ja:letters:furigana","ja:combination:two_responses"],"kwargs":[{},{}]}
-{"key":160,"prompt":"","instruction_id_list":["ja:letters:katakana_only","ja:length_constraints:number_sentences"],"kwargs":[{},{"relation":"","num_sentences":}]}
-{"key":161,"prompt":"","instruction_id_list":["ja:combination:two_responses","ja:startend:sentence_unified_end"],"kwargs":[{},{"ending":""}]}
-{"key":162,"prompt":"","instruction_id_list":["ja:length_constraints:number_sentences","ja:startend:sentence_unified_end"],"kwargs":[{"relation":"","num_sentences":},{"ending":""}]}
-{"key":163,"prompt":"","instruction_id_list":["ja:keywords:letter_frequency","ja:letters:furigana","ja:length_constraints:number_sentences"],"kwargs":[{"let_relation":"","letter":"","let_frequency":},{},{"relation":"","num_sentences":}]}
-{"key":164,"prompt":"","instruction_id_list":["ja:combination:two_responses","ja:letters:hiragana_only","ja:punctuation:no_period"],"kwargs":[{},{},{}]}
-{"key":165,"prompt":"","instruction_id_list":["ja:detectable_format:number_numbered_lists","ja:keywords:frequency","ja:detectable_format:title"],"kwargs":[{"num_items":},{"relation":"","keyword":"","frequency":},{}]}
-{"key":166,"prompt":"","instruction_id_list":["ja:length_constraints:number_paragraphs","ja:letters:furigana","ja:letters:kansuuji"],"kwargs":[{"num_paragraphs":},{},{}]}
-{"key":167,"prompt":"","instruction_id_list":["ja:combination:repeat_prompt","ja:detectable_content:number_placeholders","ja:detectable_format:multiple_sections"],"kwargs":[{"prompt_to_repeat":""},{"num_placeholders":},{"section_spliter":"","num_sections":}]}
-{"key":168,"prompt":"","instruction_id_list":["ja:detectable_format:number_bullet_lists","ja:punctuation:no_comma","ja:letters:no_hiragana"],"kwargs":[{"num_bullets":},{},{}]}
-{"key":169,"prompt":"","instruction_id_list":["ja:length_constraints:nth_paragraph_first_word","ja:detectable_format:nominal_ending","ja:startend:quotation"],"kwargs":[{"first_word":"","num_paragraph":,"nth_paragraph":},{"count":},{}]}
-{"key":170,"prompt":"","instruction_id_list":["ja:startend:sentence_unified_end","ja:letters:no_katakana","ja:keywords:forbidden_words"],"kwargs":[{"ending":""},{},{"forbidden_words":[]}]}
-{"key":171,"prompt":"","instruction_id_list":["ja:letters:kanji","ja:length_constraints:number_letters","ja:detectable_content:postscript"],"kwargs":[{"relation":"","kanji_limit":},{"relation":"","num_letters":},{"postscript_marker":""}]}
-{"key":172,"prompt":"","instruction_id_list":["ja:keywords:existence","ja:detectable_format:number_highlighted_sections","ja:startend:end_checker"],"kwargs":[{"keywords":[]},{"num_highlights":},{"end_phrase":""}]}
-{"key":173,"prompt":"","instruction_id_list":["ja:"],"kwargs":[{}]}
-{"key":174,"prompt":"","instruction_id_list":["ja:"],"kwargs":[{}]}
-{"key":175,"prompt":"","instruction_id_list":["ja:"],"kwargs":[{}]}
-{"key":176,"prompt":"","instruction_id_list":["ja:"],"kwargs":[{}]}
-{"key":177,"prompt":"","instruction_id_list":["ja:"],"kwargs":[{}]}
-{"key":178,"prompt":"","instruction_id_list":["ja:"],"kwargs":[{}]}
-{"key":179,"prompt":"","instruction_id_list":["ja:"],"kwargs":[{}]}
-{"key":180,"prompt":"","instruction_id_list":["ja:"],"kwargs":[{}]}
-{"key":181,"prompt":"","instruction_id_list":["ja:"],"kwargs":[{}]}
-{"key":182,"prompt":"","instruction_id_list":["ja:"],"kwargs":[{}]}
-{"key":183,"prompt":"","instruction_id_list":["ja:"],"kwargs":[{}]}
-{"key":184,"prompt":"","instruction_id_list":["ja:"],"kwargs":[{}]}
-{"key":185,"prompt":"","instruction_id_list":["ja:"],"kwargs":[{}]}
-{"key":186,"prompt":"","instruction_id_list":["ja:"],"kwargs":[{}]}
-{"key":187,"prompt":"","instruction_id_list":["ja:"],"kwargs":[{}]}
-{"key":188,"prompt":"","instruction_id_list":["ja:"],"kwargs":[{}]}
-{"key":189,"prompt":"","instruction_id_list":["ja:"],"kwargs":[{}]}
-{"key":190,"prompt":"","instruction_id_list":["ja:"],"kwargs":[{}]}
-{"key":191,"prompt":"","instruction_id_list":["ja:"],"kwargs":[{}]}
-{"key":192,"prompt":"","instruction_id_list":["ja:"],"kwargs":[{}]}
-{"key":193,"prompt":"","instruction_id_list":["ja:"],"kwargs":[{}]}
-{"key":194,"prompt":"","instruction_id_list":["ja:"],"kwargs":[{}]}
-{"key":195,"prompt":"","instruction_id_list":["ja:"],"kwargs":[{}]}
-{"key":196,"prompt":"","instruction_id_list":["ja:"],"kwargs":[{}]}
-{"key":197,"prompt":"","instruction_id_list":["ja:"],"kwargs":[{}]}
-{"key":198,"prompt":"","instruction_id_list":["ja:"],"kwargs":[{}]}
-{"key":199,"prompt":"","instruction_id_list":["ja:"],"kwargs":[{}]}
-{"key":200,"prompt":"","instruction_id_list":["ja:"],"kwargs":[{}]}
+{"key":151,"prompt":"始めての男性でもやりやすくイメージを良くするための髪の毛のスタイリング方法について教えてください。ただし、まず最初にリクエストを一言一句変えずに繰り返し、その後に答えを述べてください（1. 繰り返す前に言葉や文字を追加しないこと; 2. 繰り返すべきリクエストにはこの文を含めないこと）。次に、応答の最後に「他に紹介してほしいスタイリング方法はございますか。」を出力し、その後に他の言葉を続けてはいけません","instruction_id_list":["ja:startend:end_checker","ja:combination:repeat_prompt"],"kwargs":[{"end_phrase":"他に紹介してほしいスタイリング方法はございますか。"},{"prompt_to_repeat":"始めての男性でもやりやすくイメージを良くするための髪の毛のスタイリング方法について教えてください。"}]}
+{"key":152,"prompt":"1990年代のファッションにおけるトレンドの変遷について教えてください。ただし、カタカナを一文字も使わないで答えてください。応答の最後にP.S.で始まる追伸を追加してください。","instruction_id_list":["ja:letters:no_katakana","ja:detectable_content:postscript"],"kwargs":[{},{"postscript_marker":"P.S."}]}
+{"key":153,"prompt":"コーヒーメーカーの操作マニュアルを「1.」や「2.」から始まる6つの番号付きリストの形で作成してください。最初にリクエストを一言一句変えずに繰り返し、その後に答えを述べてください（1. 繰り返す前に言葉や文字を追加しないこと; 2. 繰り返すべきリクエストにはこの文を含めないこと）。","instruction_id_list":["ja:combination:repeat_prompt","ja:detectable_format:number_numbered_lists"],"kwargs":[{"prompt_to_repeat":"コーヒーメーカーの操作マニュアルを「1.」や「2.」から始まる6つの番号付きリストの形で作成してください。"},{"num_items":6}]}
+{"key":154,"prompt":"パリで偶然出会った外国人同士が恋に落ちる物語を書いてください。ただし、ひらがなを一文字も使用しないで答えてください。また、応答の最後に追伸で始まる「追伸」を追加してください。","instruction_id_list":["ja:detectable_content:postscript","ja:letters:no_hiragana"],"kwargs":[{"postscript_marker":"追伸"},{}]}
+{"key":155,"prompt":"インドの歴史上で影響力が非常に高いとされる人物を8人紹介してください。ただし、応答全体で句点「。」を用いずに、番号付きリストの形で説明してください","instruction_id_list":["ja:detectable_format:number_numbered_lists","ja:punctuation:no_period"],"kwargs":[{"num_items":8},{}]}
+{"key":156,"prompt":"『マインクラフト』に登場してくるキャラクターをそれぞれ簡潔に、ひらがなを一文字も使用しないで答えてください。ただし、応答全体を鉤括弧「」で囲んでください。","instruction_id_list":["ja:letters:no_hiragana","ja:startend:quotation"],"kwargs":[{},{}]}
+{"key":157,"prompt":"桜の花の種類と特徴について、句点を一切用いる事なく説明してください。ただし、回答に含まれる全ての漢字にふりがなをつけてください。ふりがなは漢字の直後に全角の括弧の中に書いてください。","instruction_id_list":["ja:punctuation:no_period","ja:letters:furigana"],"kwargs":[{},{}]}
+{"key":158,"prompt":"未来から警告が来たという設定で怪文書を書いてください。ただし、応答全体を鉤括弧で囲み、カタカナだけを用いて答えてください。","instruction_id_list":["ja:startend:quotation","ja:letters:katakana_only"],"kwargs":[{},{}]}
+{"key":159,"prompt":"船のパラドックス（テセウスの船）について2種類の答え方で説明してください。回答のみを出力し、それぞれの回答はアスタリスク6個（******）で区切ってください。ただし、回答に含まれる全ての漢字にふりがなをつけてください。ふりがなは漢字の直後に全角の括弧の中に書いてください。","instruction_id_list":["ja:letters:furigana","ja:combination:two_responses"],"kwargs":[{},{}]}
+{"key":160,"prompt":"宇宙人が地球に初めて来たときに言いそうなセリフを4行以上の文章で書いてください。ただし、カタカナだけを用いて答えてください。","instruction_id_list":["ja:letters:katakana_only","ja:length_constraints:number_sentences"],"kwargs":[{},{"relation":"以上","num_sentences":4}]}
+{"key":161,"prompt":"電話に出られなかったときの言い訳を2種類書いてください。回答のみを出力し、それぞれの回答はアスタリスク6個（******）で区切ってください。ただし、全ての文末が「ました」で統一された自然な文章にしてください。","instruction_id_list":["ja:combination:two_responses","ja:startend:sentence_unified_end"],"kwargs":[{},{"ending":"ました"}]}
+{"key":162,"prompt":"学生会長としての責任を誓う宣誓を書いてください。ただし、全ての文末を「ます」で統一した自然な5行未満の文章に仕上げてください。","instruction_id_list":["ja:length_constraints:number_sentences","ja:startend:sentence_unified_end"],"kwargs":[{"relation":"未満","num_sentences":5},{"ending":"ます"}]}
+{"key":163,"prompt":"中国の辛亥革命について5行以上の文章で説明してください。ただしすべての漢字にふりがなをつけてください。ふりがなは全角の括弧の中に書いてください。また、応答の中で文字「い」を11回出現させてください。","instruction_id_list":["ja:keywords:letter_frequency","ja:letters:furigana","ja:length_constraints:number_sentences"],"kwargs":[{"let_relation":"以上","letter":"い","let_frequency":11},{},{"relation":"以上","num_sentences":5}]}
+{"key":164,"prompt":"学校の文化祭のチラシを作るにあたって参考にできる内容をひらがなだけを使って書いてください。ただし、2種類の異なる答え方をしてください。回答のみを出力し、それぞれの回答はアスタリスク6個（******）で区切ってください。また、応答全体で句点を使用しないでください。","instruction_id_list":["ja:combination:two_responses","ja:letters:hiragana_only","ja:punctuation:no_period"],"kwargs":[{},{},{}]}
+{"key":165,"prompt":"2024パリオリンピックの結果や総評をまとめる記事を書くための大枠を作ってください。ただし、以下のルールを守ってください。まず、二重鉤括弧で囲まれたタイトルを最初につけてください。次に、1.などから始まる5個の番号付きリストで全体を構成させてください。最後に、「異例」という単語を4回以上用いてください。","instruction_id_list":["ja:detectable_format:number_numbered_lists","ja:keywords:frequency","ja:detectable_format:title"],"kwargs":[{"num_items":5},{"relation":"以上","keyword":"異例","frequency":4},{}]}
+{"key":166,"prompt":"ギリシャのスパルタの軍事制度について、それぞれアスタリスク3つで区切られた3段落の文章で説明してください。ただし、現れる数字は全て漢数字で表記した上で、回答に含まれる全ての漢字にふりがなをつけてください。ふりがなは漢字の直後に全角の括弧の中に書いてください。","instruction_id_list":["ja:length_constraints:number_paragraphs","ja:letters:furigana","ja:letters:kansuuji"],"kwargs":[{"num_paragraphs":3},{},{}]}
+{"key":167,"prompt":"冬におすすめのスキーリゾートについて紹介してください。ただし、次のルールを守ってください。\nルール1: 最初にリクエストを一言一句変えずに繰り返し、その後に答えを述べてください（1. 繰り返す前に言葉や文字を追加しないこと; 2. 繰り返すべきリクエストにはこの文を含めないこと）。\nルール2: [リゾート名]、[場所]、[料金]のようプレースホルダーを5個は入れてください。\nルール3: 文章は全部で4章で構成させ、各セクションの始まりは第1章や第2章から書き始めてください。","instruction_id_list":["ja:combination:repeat_prompt","ja:detectable_content:number_placeholders","ja:detectable_format:multiple_sections"],"kwargs":[{"prompt_to_repeat":"冬におすすめのスキーリゾートについて紹介してください。"},{"num_placeholders":5},{"section_spliter":"章","num_sections":4}]}
+{"key":168,"prompt":"ゴスペル音楽などの南アフリカの音楽の特徴について、6個の箇条書きで説明してください。ただし、応答全体で読点やひらがなを一文字も使用しないでください。","instruction_id_list":["ja:detectable_format:number_bullet_lists","ja:punctuation:no_comma","ja:letters:no_hiragana"],"kwargs":[{"num_bullets":6},{},{}]}
+{"key":169,"prompt":"次の指示に対して、応答全体を鉤括弧「」で囲んで答えてください。2020年に起きた世界中の出来事を4段落の文章にまとめてください。各段落の一文目は見出しのように体言止めで書いてください。また、段落はそれぞれ2つの改行で区切り、1段落目は「パンデミック」という単語で書き始めてください。","instruction_id_list":["ja:length_constraints:nth_paragraph_first_word","ja:detectable_format:nominal_ending","ja:startend:quotation"],"kwargs":[{"first_word":"パンデミック","num_paragraph":4,"nth_paragraph":1},{"count":4},{}]}
+{"key":170,"prompt":"屋久島が世界遺産として登録された理由を中心に、そこに住む動植物についてカタカナを一文字も使わないで説明してください。ただし、全ての文末が「です」で統一された自然な文章にしてください。また、応答に「観光」「雨」「海」「森」という単語を含めないでください。","instruction_id_list":["ja:startend:sentence_unified_end","ja:letters:no_katakana","ja:keywords:forbidden_words"],"kwargs":[{"ending":"です"},{},{"forbidden_words":["観光","雨","森","海"]}]}
+{"key":171,"prompt":"ヒップホップの主要な要素について、600文字以上で説明してください。ただし、漢字を40文字以上用いて答えてください。また、応答の最後にP.S.で始まる追伸を追加してください。","instruction_id_list":["ja:letters:kanji","ja:length_constraints:number_letters","ja:detectable_content:postscript"],"kwargs":[{"relation":"以上","kanji_limit":40},{"relation":"以上","num_letters":600},{"postscript_marker":"P.S."}]}
+{"key":172,"prompt":"ビーガンの栄養バランスについて、「たんぱく質」「炭水化物」「脂質」という単語をキーワードとして説明してください。例えば《豆》や《ナッツ》のように、回答の中で少なくとも9つのセクションを《》の記号を用いて強調してください。ただし、応答の最後に次のフレーズをそのまま出力してください:「他に聞きたい質問があればにお聞きください。」 このフレーズの後に他の言葉を続けてはいけません。","instruction_id_list":["ja:keywords:existence","ja:detectable_format:number_highlighted_sections","ja:startend:end_checker"],"kwargs":[{"keywords":["タンパク質","炭水化物","脂質"]},{"num_highlights":9},{"end_phrase":"他に聞きたい質問があればにお聞きください。"}]}
