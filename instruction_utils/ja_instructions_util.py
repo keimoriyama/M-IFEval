@@ -145,4 +145,4 @@ def generate_keywords(num_keywords):
 def tokenizing_texts(text):
   """Return tokenized texts"""
   tokenizer = Tokenizer()
-  return tokenizer(text)
+  return tokenizer.tokenize(text)

@@ -2,3 +2,5 @@ absl-py
 langdetect
 nltk
 immutabledict
+janome
+ja_sentence_segmenter
