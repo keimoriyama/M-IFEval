@@ -135,6 +135,15 @@ def count_words(text):
   num_words = len([token.text for token in tokenized_text if not token.is_punct])  # Count non-punctuation tokens
   return num_words
 
+def tokenize_words(text):
+  """Returns a list of words from the text, respecting Spanish special characters and features with spaCy."""
+  # Load the Spanish tokenizer model from spaCy
+  nlp = spacy.load("es_core_news_sm")
+  tokenized_text = nlp(text)  # Process the text with the Spanish tokenizer
+  # Extract non-punctuation tokens
+  words = [token.text for token in tokenized_text if not token.is_punct]
+  return words
+
 def count_sentences(text):
   """Count the number of sentences."""
   # Load the Spanish tokenizer model from spacy
@@ -146,3 +155,4 @@ def count_sentences(text):
 def generate_keywords(num_keywords):
   """Randomly generates a few keywords."""
   return random.sample(WORD_LIST, k=num_keywords)
+    
