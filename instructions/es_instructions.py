@@ -680,7 +680,7 @@ class PostscriptChecker(Instruction):
     if self._postscript_marker == "P.D.":
       postscript_pattern = r"\s*p\.\s?d\..*$"
     elif self._postscript_marker == "Nota":
-      postscript_pattern = r"\s*nota.*$
+      postscript_pattern = r"\s*nota.*$"
     else:
       postscript_pattern = r"\s*" + self._postscript_marker.lower() + r".*$"
     postscript = re.findall(postscript_pattern, value, flags=re.MULTILINE)
