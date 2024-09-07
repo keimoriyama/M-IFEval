@@ -23,6 +23,7 @@ from typing import Dict, Optional, Sequence, Union
 
 from absl import logging
 import langdetect
+import unicodedata
 
 from instruction_utils import es_instructions_util
 
