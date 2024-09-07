@@ -1044,23 +1044,27 @@ class ParagraphFirstWordCheck(Instruction):
     else:
       return False
 
-    first_word = ""
-    punctuation = {".", ",", "?", "!", "'", '"'}
+    # Helper function to remove punctuation from a word
+    def remove_punctuation(word):
+        return ''.join(char for char in word if char not in string.punctuation)
 
-    # get first word and remove punctuation
-    word = paragraph.split()[0].strip()
-    # TODO(jeffrey): make more complex?
-    word = word.lstrip("'")
-    word = word.lstrip('"')
+    #Calculate how many words have to be extracted from the nth paragraph to compare
+    expected_words = self._first_word.split()
+    num_expected_words = len(expected_words)
 
-    for letter in word:
-      if letter in punctuation:
-        break
-      first_word += letter.lower()
+    # Get words of the nth paragraph and remove punctuation
+    paragraph_words = [remove_punctuation(word).lower() for word in paragraph.split()]
+
+    # Return False if we are looking for more words than the paragraph has
+    if len(paragraph_words) < num_expected_words:
+        return False
+
+    # Extract the first `num_expected_words` words from the paragraph
+    extracted_words = paragraph_words[:num_expected_words]
 
     return (
         num_paragraphs == self._num_paragraphs
-        and first_word == self._first_word
+        and extracted_words == expected_words
     )
 
 
@@ -1448,7 +1452,7 @@ class LetterFrequencyChecker(Instruction):
 
 
 class CapitalLettersSpanishChecker(Instruction):
-  """Checks that the response is in english and is in all capital letters."""
+  """Checks that the response is in spanish and is in all capital letters."""
 
   def build_description(self):
     """Build the instruction description."""
@@ -1468,8 +1472,18 @@ class CapitalLettersSpanishChecker(Instruction):
     """Checks that the response is in Spanish and in all capital letters."""
     assert isinstance(value, str)
 
+    # Normalize the string to handle accented characters and diacritics 
+    # It decomposes the characters into their base form and diacritics, using the using the NFKD normalization form.
+    normalized_value = unicodedata.normalize('NFKD', value)
+
+    # Check if all normalized, alphabetic characters are uppercase, ignoring non-alphabetic characters
+    is_uppercase = all(
+        (c.isupper() or not c.isalpha()) for c in normalized_value
+    )
+
+    #NOTE: langdetect works with the original value since the decomposition of the characters in the normalization could affect the language detection.
     try:
-      return value.isupper() and langdetect.detect(value) == "es"
+      return is_uppercase and langdetect.detect(value) == "es"
     except langdetect.LangDetectException as e:
       # Count as instruction is followed.
       logging.error(
