@@ -1480,6 +1480,7 @@ class CapitalLettersSpanishChecker(Instruction):
     # Check if all normalized, alphabetic characters are uppercase, ignoring non-alphabetic characters
     is_uppercase = all(
         (c.isupper() or not c.isalpha()) for c in normalized_value
+        if not unicodedata.combining(c)  # Skip diacritics
     )
 
     #NOTE: langdetect works with the original value since the decomposition of the characters in the normalization could affect the language detection.
@@ -1489,7 +1490,7 @@ class CapitalLettersSpanishChecker(Instruction):
       # Count as instruction is followed.
       logging.error(
           "Unable to detect language for text %s due to %s", value, e
-      )  # refex: disable=pytotw.037
+      )  
       return True
 
 
