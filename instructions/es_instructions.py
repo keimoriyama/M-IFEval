@@ -915,7 +915,12 @@ class NumberOfWords(Instruction):
 
   def check_following(self, value):
     """Checks if the response contains the expected number of words."""
-    num_words = es_instructions_util.count_words(value)
+
+    # Remove common bullet points like '-', '*', and numbered lists like '1.', '2.'
+    # Only removes numbers that are bullet points because the pattern is anchored at the beginning of the sentence.
+    cleaned_text = re.sub(r'(^\s*[\d]+\.\s*)|(^\s*[-*]\s*)', '', value, flags=re.MULTILINE)
+      
+    num_words = es_instructions_util.count_words(cleaned_text)
 
     if self._comparison_relation == _COMPARISON_RELATION[0]:
       return num_words >= self._num_words
