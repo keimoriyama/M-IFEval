@@ -82,8 +82,8 @@ _KEYWORD_FREQUENCY = 3
 #The occurrences of a single letter.
 _LETTER_FREQUENCY = 20
 
-#The occurrences of words with all capital letters.
-_ALL_CAPITAL_WORD_FREQUENCY = 20
+#The occurrences of words with all  letters.
+_ALL__WORD_FREQUENCY = 20
 
 #The number of words in the response.
 _NUM_WORDS_LOWER_LIMIT = 1
@@ -1485,7 +1485,7 @@ class CapitalLettersSpanishChecker(Instruction):
 
     #NOTE: langdetect works with the original value since the decomposition of the characters in the normalization could affect the language detection.
     try:
-      return is_uppercase and langdetect.detect(value) == "es"
+      return is_uppercase and langdetect.detect(value.lower()) == "es"
     except langdetect.LangDetectException as e:
       # Count as instruction is followed.
       logging.error(
