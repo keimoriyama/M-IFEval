@@ -1347,6 +1347,10 @@ class EndChecker(Instruction):
     """Checks if the response ends with the expected phrase."""
     value = value.strip().strip("\"").lower()
     self._end_phrase = self._end_phrase.strip().lower()
+    # Check if the last character in value is a dot (.)
+    if value and value[-1] == ".":
+    # Remove the dot before checking if it ends with the expected end_phrase kwarg
+        value = value[:-1]
     return value.endswith(self._end_phrase)
 
 
