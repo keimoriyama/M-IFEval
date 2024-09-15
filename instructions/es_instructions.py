@@ -918,7 +918,7 @@ class NumberOfWords(Instruction):
 
     # Remove common bullet points like '-', '*', and numbered lists like '1.', '2.'
     # Only removes numbers that are bullet points because the pattern is anchored at the beginning of the sentence.
-    cleaned_text = re.sub(r'(^\s*[\d]+\.\s*)|(^\s*[-*]\s*)', '', text, flags=re.MULTILINE)
+    cleaned_text = re.sub(r'(^\s*[\d]+\.\s*)|(^\s*[-*]\s*)', '', value, flags=re.MULTILINE)
     cleaned_text_without_newlines = cleaned_text.replace('\n', ' ')
       
     num_words = es_instructions_util.count_words(cleaned_text_without_newlines)
