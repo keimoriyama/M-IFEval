@@ -224,7 +224,28 @@ class NumberOfSentences(Instruction):
         ValueError if the string in `instruction_args` is not in
         [`al menos`, `como máximo`].
     """
-    num_sentences = es_instructions_util.count_sentences(value)
+
+    # Remove common bullet points like '-', '*', and numbered lists like '1.', '2.'
+    #Only removes numbers that are bullet points because the pattern is anchored at the beginning of the sentence.
+    cleaned_text = re.sub(r'(^\s*[\d]+\.\s*)|(^\s*[-*]\s*)', '', value, flags=re.MULTILINE)
+
+    # Detect the language
+    detected_lang = "es"  # Default to Spanish
+    try:
+        detected_lang = langdetect.detect(value.lower())
+    except langdetect.lang_detect_exception.LangDetectException:
+        # If language detection fails, default to Spanish
+        pass
+
+    if detected_lang == "es":
+      num_sentences = es_instructions_util.count_sentences(cleaned_text)
+    
+    else:
+      import spacy
+      nlp = spacy.load("xx_sent_ud_sm")
+      tokenized_text = nlp(cleaned_text) 
+      num_sentences = len(list(tokenized_text.sents))
+      
     if self._comparison_relation == _COMPARISON_RELATION[0]:
       return num_sentences >= self._num_sentences_threshold
     elif self._comparison_relation == _COMPARISON_RELATION[1]:
