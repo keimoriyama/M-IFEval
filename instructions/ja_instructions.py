@@ -379,7 +379,7 @@ class NumberedListChecker(Instruction):
     return num_numbered_lists == self._num_items
   
 
-class zResponseChecker(Instruction):
+class ConstrainedResponseChecker(Instruction):
   """Checks the constrained response."""
 
   def build_description(self):
