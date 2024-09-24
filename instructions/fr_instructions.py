@@ -1631,47 +1631,47 @@ class ForbiddenChar(Instruction):
     # Search for the pattern in the string
     return pattern.search(value) is not None
   
-class ExcludeFormalNegation(Instruction):
-  """Checks that 'ne' and 'n'' are not used in the response."""
+# class ExcludeFormalNegation(Instruction):
+#   """Checks that 'ne' and 'n'' are not used in the response."""
 
-  _FORBIDDEN_WORDS = ["ne", "n'"]
+#   _FORBIDDEN_WORDS = ["ne", "n'"]
 
-  def build_description(self):
-      """Build the instruction description.
+#   def build_description(self):
+#       """Build the instruction description.
 
-      Returns:
-        A string representing the instruction description.
-      """
-      self._description_pattern = ("Utilisez la forme informelle de la négation dans votre réponse. Excluez l'emploi de \"ne\" ou \"n'\".")
-      return self._description_pattern
+#       Returns:
+#         A string representing the instruction description.
+#       """
+#       self._description_pattern = ("Utilisez la forme informelle de la négation dans votre réponse. Excluez l'emploi de \"ne\" ou \"n'\".")
+#       return self._description_pattern
 
-  def get_instruction_args(self):
-      """Returns the keyword args of build description."""
-      return {}
+#   def get_instruction_args(self):
+#       """Returns the keyword args of build description."""
+#       return {}
 
-  def get_instruction_args_keys(self):
-      """Returns the args keys of `build_description`."""
-      return []
+#   def get_instruction_args_keys(self):
+#       """Returns the args keys of `build_description`."""
+#       return []
 
-  def check_following(self, value):
-      """Check if the response does not contain 'ne' or 'n''."""
-      return not any(self.contains_word(value, word) for word in self._FORBIDDEN_WORDS)
+#   def check_following(self, value):
+#       """Check if the response does not contain 'ne' or 'n''."""
+#       return not any(self.contains_word(value, word) for word in self._FORBIDDEN_WORDS)
 
-  def contains_word(self, value, word):
-      """
-      Check if a specific word is present in a string, ignoring case.
+#   def contains_word(self, value, word):
+#       """
+#       Check if a specific word is present in a string, ignoring case.
 
-      Args:
-        value (str): The string in which to search for the word.
-        word (str): The word to search for in the string.
+#       Args:
+#         value (str): The string in which to search for the word.
+#         word (str): The word to search for in the string.
 
-      Returns:
-        (bool): True if the word is present in the string, False otherwise.
-      """
-      # Create a regex pattern to match the word, case insensitive
-      pattern = re.compile(r'\b' + re.escape(word) + r'\b', flags=re.IGNORECASE)
-      # Search for the pattern in the string
-      return pattern.search(value) is not None
+#       Returns:
+#         (bool): True if the word is present in the string, False otherwise.
+#       """
+#       # Create a regex pattern to match the word, case insensitive
+#       pattern = re.compile(r'\b' + re.escape(word) + r'\b', flags=re.IGNORECASE)
+#       # Search for the pattern in the string
+#       return pattern.search(value) is not None
 
 class UseInformalAddress(Instruction):
     """Checks that the response uses informal address, 'tutoiement' in French."""
@@ -1685,6 +1685,12 @@ class UseInformalAddress(Instruction):
             r'\bta\b',           # possessive adjective
             r'\btes\b',          # possessive adjective
         ]
+    
+    #_VOUS_INDICATORS = [
+    #        r'\bvous\b',          # "vous" pronoun
+    #        r'\bvotre\b',         # possessive adjective
+    #        r'\bvos\b',           # possessive adjective
+    #    ]
 
     def build_description(self):
         """Build the instruction description.
@@ -1692,7 +1698,7 @@ class UseInformalAddress(Instruction):
         Returns:
           A string representing the instruction description.
         """
-        self._description_pattern = ("Adoptez le tutoiement dans vos réponses.")
+        self._description_pattern = ("Parlez directement à votre interlocuteur dans votre réponse et utilisez le tutoiement.")
         return self._description_pattern
 
     def get_instruction_args(self):

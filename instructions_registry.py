@@ -168,7 +168,7 @@ FR_INSTRUCTION_DICT = {
     _STARTEND + "quotation": fr_instructions.QuotationChecker,
     # French addition
     _SPECIAL_CHARACTER + "ethel_or_cedilla": fr_instructions.ForbiddenChar,
-    _CONTENT + "informal_negation": fr_instructions.ExcludeFormalNegation,
+    #_CONTENT + "informal_negation": fr_instructions.ExcludeFormalNegation,
     _CONTENT + "informal_address": fr_instructions.UseInformalAddress,
     _SPECIAL_CHARACTER + "no_accents": fr_instructions.NoAccents,
     _SPECIAL_CHARACTER + "accents": fr_instructions.AccentsChecker,
