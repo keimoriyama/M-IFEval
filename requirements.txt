@@ -4,4 +4,5 @@ ja_sentence_segmenter
 langdetect
 nltk
 immutabledict
-
+janome
+ja_sentence_segmenter

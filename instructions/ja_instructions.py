@@ -349,7 +349,7 @@ class NumberedListChecker(Instruction):
     if self._num_items is None or self._num_items < 0:
       self._num_items = random.randint(1, _NUM_BULLETS)
     self._description_pattern = (
-        "応答はちょうど {num_bullets} 個の番号付きリストで構成してください。 " +
+        "応答はちょうど {num_items} 個の番号付きリストで構成してください。 " +
         "以下のような番号付きリストの形を参考にしてください:\n" +
         "1. 一つめの内容\n" +
         "2. 二つめの内容")
