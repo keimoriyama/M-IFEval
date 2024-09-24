@@ -42,3 +42,26 @@ If you use our work, please consider citing our preprint:
   year={2023}
 }
 ```
+
+## 日本語データセットについて
+
+日本語特有のinstructionsは次の通りです。
+| Instruction Group | Instruction | Description|
+| --- | --- | --- |
+| Length Constraints | Number Letters | {N}文字以上 / 未満で答えてください。 |
+| Punctuation | No Periods | 応答全体で句点を使用しないでください。 |
+| Letters | Furigana | 全ての漢字にふりがなをつけてください。ふりがなは全角の括弧（）の中に書いてください。 |
+| Letters | Kanji | {N}文字以上 / 未満漢字を用いて答えてください。 |
+| Letters | No Hiragana | ひらがなを一文字も使わないで答えてください。 |
+| Letters | Hiragana Only | ひらがなだけを用いて答えてください。 |
+| Letters | No Katakana | カタカナを一文字も使わないで答えてください。 |
+| Letters | Katakana Only | カタカナだけを用いて答えてください。 |
+| Letters | Unified Sentence Endings | 応答において、全ての文末が「{ending}」で統一された自然な文章にしてください。 |
+| Letters | Kansuuji | 数字を全て漢数字で表記してください。 |
+| Detectable Format | Nominal Endings | 応答の中で体言止めを{N}回は使用してください。 |
+| Detectable Format | Numbered Lists | 応答はちょうど {N} 個の番号付きリストで構成してください。以下のような番号付きリストの形を参考にしてください: 1. 一つめの内容 ... |
+
+日本語のプロンプトは3つのステップで作成されました。
+まず、Few-shotプロンプティングを用いて、この課題に適切なプロンプトを書くように教育しました。
+次に、なるべくランダムなテーマとプロンプトに組み込みたい条件文を指定することで、条件に合ったプロンプトを10個書かせました。
+最後に、それらから適切なプロンプトを手動で書き換えることで、プロンプト文をコードに書き加えました。
