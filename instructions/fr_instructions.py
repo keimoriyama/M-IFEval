@@ -1609,13 +1609,12 @@ class ForbiddenChar(Instruction):
     """Check if the response does not contain the expected character."""
     return not self.contains_char(value, self._forbidden_char)
   
-  def contains_char(self, value, char):
+  def contains_char(self, value):
     """
     Check if a specific character is present in a string, ignoring case.
 
     Args:
       value (str): The string in which to search for the character.
-      char (str): The character to search for in the string.
 
     Returns:
       (bool): True if the character is present in the string, False otherwise.
@@ -1627,7 +1626,7 @@ class ForbiddenChar(Instruction):
     False
     """
     # Create a regex pattern to match the character, case insensitive
-    pattern = re.compile(re.escape(char), flags=re.IGNORECASE)
+    pattern = re.compile(re.escape(self._forbidden_char), flags=re.IGNORECASE)
     # Search for the pattern in the string
     return pattern.search(value) is not None
   
