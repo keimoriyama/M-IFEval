@@ -1815,7 +1815,7 @@ class NumbersInWords(Instruction):
 
     def build_description(self):
         """Build the instruction description."""
-        self._description_pattern = "N'utilisez pas de chiffres arabes dans votre réponse, tous les nombres doivent être écrits en toutes lettres."
+        self._description_pattern = "N'utilisez pas de chiffres arabes dans votre réponse."
         return self._description_pattern
 
     def get_instruction_args(self):
