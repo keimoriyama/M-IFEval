@@ -172,7 +172,7 @@ FR_INSTRUCTION_DICT = {
     _CONTENT + "informal_address": fr_instructions.UseInformalAddress,
     _SPECIAL_CHARACTER + "no_accents": fr_instructions.NoAccents,
     _SPECIAL_CHARACTER + "accents": fr_instructions.AccentsChecker,
-    _FORMAT + "no_digits": fr_instructions.NumbersInWords,
+    _CONTENT + "no_digits": fr_instructions.NumbersInWords,
 }
 
 INSTRUCTION_DICT = {}
