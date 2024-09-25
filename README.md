@@ -70,13 +70,13 @@ If you use our work, please consider citing our preprint:
 
 The French-specific instructions are as follows:
 
-| Instruction Group | Instruction | Description|
-| --- | --- | --- |
-| Special Character | No Ethel or Cedilla | N'incluez pas le caractère {forbidden_char} dans votre réponse. |
-| Special Character | No Accents | Ne faites pas usage d'accents dans votre reponse. |
-| Special Character | Add Accents | Réécris ce texte en ajoutant les accents. |
-| Detectable Content | Informal Address | Parlez directement à votre interlocuteur dans votre réponse et utilisez le tutoiement. |
-| Detectable Content | No Digits | N'utilisez pas de chiffres arabes dans votre réponse. |
+| Instruction Group | Instruction | Description| Translation |
+| --- | --- | --- | --- |
+| Special Character | Forbidden Character (Ethel or Cedilla) | N'incluez pas le caractère {forbidden_char} dans votre réponse. | Do not include the character {forbidden_char} in your answer.
+| Special Character | No Accents | Ne faites pas usage d'accents dans votre réponse. | Do not use accents in your answer. |
+| Special Character | Add Accents | Réécris ce texte en ajoutant les accents. | Rewrite this text by adding the accents. | 
+| Detectable Content | Informal Address | Parlez directement à votre interlocuteur dans votre réponse et utilisez le tutoiement. | Speak directly to your conversation partner in your response and address them informally. |
+| Detectable Content | No Digits | N'utilisez pas de chiffres arabes dans votre réponse. | Do not use numerals in your response. |
 
 
 **Main changes in generic instructions:**
