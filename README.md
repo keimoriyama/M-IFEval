@@ -65,3 +65,34 @@ If you use our work, please consider citing our preprint:
 まず、Few-shotプロンプティングを用いて、この課題に適切なプロンプトを書くように教育しました。
 次に、なるべくランダムなテーマとプロンプトに組み込みたい条件文を指定することで、条件に合ったプロンプトを10個書かせました。
 最後に、それらから適切なプロンプトを手動で書き換えることで、プロンプト文をコードに書き加えました。
+
+## French Dataset
+
+The French-specific instructions are as follows:
+
+| Instruction Group | Instruction | Description|
+| --- | --- | --- |
+| Special Character | No Ethel or Cedilla | N'incluez pas le caractère {forbidden_char} dans votre réponse. |
+| Special Character | No Accents | Ne faites pas usage d'accents dans votre reponse. |
+| Special Character | Add Accents | Réécris ce texte en ajoutant les accents. |
+| Detectable Content | Informal Address | Parlez directement à votre interlocuteur dans votre réponse et utilisez le tutoiement. |
+| Detectable Content | No Digits | N'utilisez pas de chiffres arabes dans votre réponse. |
+
+
+**Main changes in generic instructions:**
+- `TitleChecker`: 
+
+  - Original: << title >> 
+
+  - French: ##title##
+
+  Motivation: <<>> is too close to French quotation marks «», and is not really used in French.
+
+- `QuotationChecker`: 
+  
+  - original: checks for "texte"
+  
+  - french: checks for «texte» or "texte" or 'texte'
+  
+  Motivation: all above quotations would be valid in French
+
