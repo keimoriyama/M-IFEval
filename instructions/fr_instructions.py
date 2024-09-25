@@ -1607,7 +1607,7 @@ class ForbiddenChar(Instruction):
 
   def check_following(self, value):
     """Check if the response does not contain the expected character."""
-    return not self.contains_char(value, self._forbidden_char)
+    return not self.contains_char(value)
   
   def contains_char(self, value):
     """
