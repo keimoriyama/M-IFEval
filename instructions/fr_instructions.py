@@ -1305,12 +1305,12 @@ class TitleChecker(Instruction):
 
   def check_following(self, value):
     """Checks if the response contains a title."""
-    pattern = r"<<[^\n]+>>"
+    pattern = r"##[^\n]+##"
     re_pattern = re.compile(pattern)
     titles = re.findall(re_pattern, value)
 
     for title in titles:
-      if title.lstrip("<").rstrip(">").strip():
+      if title.lstrip("#").rstrip("#").strip():
         return True
     return False
 
