@@ -1415,7 +1415,7 @@ class CapitalLettersFrenchChecker(Instruction):
     assert isinstance(value, str)
 
     try:
-      return value.isupper() and langdetect.detect(value) == "fr"
+      return value.isupper() and langdetect.detect(value.lower()) == "fr" # put text in lowercase for langdetect, otherwise detection outputs german for French Caps text
     except langdetect.LangDetectException as e:
       # Count as instruction is followed.
       logging.error(
