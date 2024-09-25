@@ -1723,7 +1723,7 @@ class NoAccents(Instruction):
         Returns:
           A string representing the instruction description.
         """
-        self._description_pattern = ("Ne faites pas usage d'accents dans votre reponse.")
+        self._description_pattern = ("Ne faites pas usage d'accents dans votre réponse.")
         return self._description_pattern
 
     def get_instruction_args(self):
