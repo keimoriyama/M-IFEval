@@ -76,7 +76,7 @@ The French-specific instructions are as follows:
 | Special Character | No Accents | Ne faites pas usage d'accents dans votre réponse. | Do not use accents in your answer. |
 | Special Character | Add Accents | Réécris ce texte en ajoutant les accents. | Rewrite this text by adding the accents. | 
 | Detectable Content | Informal Address | Parlez directement à votre interlocuteur dans votre réponse et utilisez le tutoiement. | Speak directly to your conversation partner in your response and address them informally. |
-| Detectable Content | No Digits | N'utilisez pas de chiffres arabes dans votre réponse. | Do not use numerals in your response. |
+| Detectable Content | No Digits | N'utilisez pas de chiffres arabes dans votre réponse. | Do not use arabic numerals in your response. |
 
 
 **Main changes in generic instructions:**
