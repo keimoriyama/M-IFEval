@@ -96,3 +96,15 @@ The French-specific instructions are as follows:
   
   Motivation: all above quotations would be valid in French
 
+  ## Spanish Dataset
+
+  The Spanish specific instructions are:
+
+  | Instruction Group | Instruction | Description| Translation |
+  | --- | --- | --- | --- |
+  Special Characters | Letter Frequency (ñ) | En tu respuesta, palabras con la letra "ñ" deben aparecer {N} veces. | In your response, words with the letter "ñ" should appear {N} times. |
+  Special Characters | Num_words: add words with tildes | Responde con al menos/como máximo {N} palabras con tilde. | Answer with at least / at most {N} words with tildes. |
+  Special Characters | Letter Frequency (ü) | En tu respuesta, palabras con la letra "ü" deben aparecer {N} veces. | In your response, words with the letter "ü" should appear {N} times. |
+  Punctuation | Interrogation marks | Tu respuesta debe incluir al menos una pregunta. | Your response must express at least one question. |
+  Punctuation | Exclamation marks | Tu respuesta debe incluir al menos una exclamación. | Your response must express at least one exclamation. |
+
