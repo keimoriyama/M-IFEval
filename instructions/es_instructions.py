@@ -23,80 +23,71 @@ from typing import Dict, Optional, Sequence, Union
 
 from absl import logging
 import langdetect
-
-from instruction_utils import ja_instructions_util
-
 import unicodedata
+
+from instruction_utils import es_instructions_util
 
 
 _InstructionArgsDtype = Optional[Dict[str, Union[int, str, Sequence[str]]]]
 
-_LANGUAGES = ja_instructions_util.LANGUAGE_CODES
+_LANGUAGES = es_instructions_util.LANGUAGE_CODES
 
-#The maximum number of kanji letters.
-_KANJI_NUM = 30
+#The relational operation for comparison.
+_COMPARISON_RELATION = ("al menos", "como máximo")
 
-#The options of sentence endings.
-_ENDING_LETTERS = ("です", "ます")
-
-#The maximum number of sentences ended with a noun.
-_NOMINAL_ENDING_COUNT = 5
-
-# The relational operation for comparison.
-_COMPARISON_RELATION = ("未満", "以上")
-
-# The maximum number of sentences.
+#The maximum number of sentences.
 _MAX_NUM_SENTENCES = 20
 
-# The number of placeholders.
+#The number of placeholders.
 _NUM_PLACEHOLDERS = 4
 
-# The number of bullet lists.
+#The number of bullet lists.
 _NUM_BULLETS = 5
 
-# The options of constrained response.
+#The options of constrained response.
 _CONSTRAINED_RESPONSE_OPTIONS = (
-    "はい、そうです。", "いいえ、違います。", "どちらとも言えません。")
+    "Sí.", "No.", "Quizás.")
 
-# The options of starter keywords.
-_STARTER_OPTIONS = ("私としては、", "私の考えでは、", "私の見解では、",
-                    "個人的には、", "私の意見では、", "私見ですが、", "私の観点から言うと、",
-                    "私の理解では、", "私の視点から見ると、")
+#The options of starter keywords.
+_STARTER_OPTIONS = ("Diría que", "Mi respuesta es", "Creo que",
+                    "En mi opinión", "Desde mi punto de vista",
+                    "El", "La", "Eso", "Un", "Una", "Para", "Por",
+                    "Entonces", "Ella", "Él")
 
 # The options of ending keywords.
 # TODO(jeffreyzhou) add more ending options
-_ENDING_OPTIONS = ("他にご質問はありますか？",
-                   "他に何かご不明な点はありますか？",
-                   "他に何かございますか？",
-                   "他にお聞きになりたいことはありますか？")
+_ENDING_OPTIONS = ("Un saludo", "¿Necesitas algo más?", "Quedo pendiente de la siguiente consulta")
 
-# The number of highlighted sections.
+#The number of highlighted sections.
 _NUM_HIGHLIGHTED_SECTIONS = 4
 
-# The section spliter.
-_SECTION_SPLITER = ("章", "節", "項")
+#The section spliter.
+_SECTION_SPLITER = ("Sección", "SECCIÓN")
 
-# The number of sections.
+#The number of sections.
 _NUM_SECTIONS = 5
 
-# The number of paragraphs.
+#The number of paragraphs.
 _NUM_PARAGRAPHS = 5
 
-# The postscript marker.
-_POSTSCRIPT_MARKER = ("P.S.", "P.P.S", "追伸")
+#The postscript marker.
+_POSTSCRIPT_MARKER = ("P.D.", "Nota")
 
-# The number of keywords.
+#The number of keywords.
 _NUM_KEYWORDS = 2
 
-# The occurrences of a single keyword.
+#The occurrences of a single keyword.
 _KEYWORD_FREQUENCY = 3
 
-# The occurrences of a single letter.
-_LETTER_FREQUENCY = 10
+#The occurrences of a single letter.
+_LETTER_FREQUENCY = 20
 
-# The number of words in the response.
-_NUM_LETTERS_LOWER_LIMIT = 200
-_NUM_LETTERS_UPPER_LIMIT = 1000
+#The occurrences of words with all  letters.
+_ALL__WORD_FREQUENCY = 20
+
+#The number of words in the response.
+_NUM_WORDS_LOWER_LIMIT = 1
+_NUM_WORDS_UPPER_LIMIT = 500
 
 
 class Instruction:
@@ -139,7 +130,8 @@ class ResponseLanguageChecker(Instruction):
       self._language = random.choice(list(_LANGUAGES.keys()))
     # TODO(tianjianlu): opens the description generation to more choices.
     self._description_pattern = (
-        "あなたは言語「{language}」を用いて応答してください。他の言語は許可されません。")
+        "Tu respuesta debe estar COMPLETAMENTE en {language}, ningún otro " +
+        "idioma está permitido.")
     return self._description_pattern.format(language=_LANGUAGES[self._language])
 
   def get_instruction_args(self):
@@ -181,11 +173,11 @@ class NumberOfSentences(Instruction):
     Args:
       num_sentences: An integer specifying the number of sentences as a
         threshold.
-      relation: A string in (`未満`, `以上`), defining the relational
+      relation: A string in (`como máximo` (at maximum), 'al menos' (at least)), defining the relational
         operator for comparison.
         Two relational comparisons are supported for now:
-        if '未満', the actual number of sentences < the threshold;
-        if '以上', the actual number of sentences >= the threshold.
+        if 'como máximo', the actual number of sentences <= the threshold;
+        if 'al menos', the actual number of sentences >= the threshold.
 
     Returns:
       A string representing the instruction description.
@@ -205,7 +197,7 @@ class NumberOfSentences(Instruction):
       self._comparison_relation = relation
 
     self._description_pattern = (
-        "応答は{num_sentences}文{relation}の文章で構成させてください。")
+        "Tu respuesta debe contener {relation} {num_sentences} frases.")
     return self._description_pattern.format(
         relation=self._comparison_relation,
         num_sentences=self._num_sentences_threshold)
@@ -230,24 +222,49 @@ class NumberOfSentences(Instruction):
 
     Raise:
         ValueError if the string in `instruction_args` is not in
-        [`未満`, `以上`].
+        [`al menos`, `como máximo`].
     """
-    num_sentences = ja_instructions_util.count_sentences(value)
+
+    # Remove common bullet points like '-', '*', and numbered lists like '1.', '2.'
+    #Only removes numbers that are bullet points because the pattern is anchored at the beginning of the sentence.
+    cleaned_text = re.sub(r'(^\s*[\d]+\.\s*)|(^\s*[-*]\s*)', '', value, flags=re.MULTILINE)
+
+    # Detect the language
+    detected_lang = "es"  # Default to Spanish
+    try:
+        detected_lang = langdetect.detect(value.lower())
+    except langdetect.lang_detect_exception.LangDetectException:
+        # If language detection fails, default to Spanish
+        pass
+
+    if detected_lang == "es":
+      num_sentences = es_instructions_util.count_sentences(cleaned_text)
+    
+    else:
+      import spacy
+      nlp = spacy.load("xx_sent_ud_sm")
+      tokenized_text = nlp(cleaned_text) 
+      num_sentences = len(list(tokenized_text.sents))
+      
     if self._comparison_relation == _COMPARISON_RELATION[0]:
-      return num_sentences < self._num_sentences_threshold
-    elif self._comparison_relation == _COMPARISON_RELATION[1]:
       return num_sentences >= self._num_sentences_threshold
+    elif self._comparison_relation == _COMPARISON_RELATION[1]:
+      return num_sentences <= self._num_sentences_threshold
 
 
 class PlaceholderChecker(Instruction):
   """Check the placeholders in template writing."""
 
-  def build_description(self, *, num_placeholders = None):
+  def build_description(self, *, num_placeholders = None,
+                        relation = None):
     """Build the instruction description.
 
     Args:
       num_placeholders: An integer denoting the minimum number of
         placeholders required in the response.
+
+      relation: A string in (`como máximo` (at maximum), 'al menos' (at least)), defining the relational
+        operator for comparison.
 
     Returns:
       A string representing the instruction description.
@@ -255,19 +272,30 @@ class PlaceholderChecker(Instruction):
     self._num_placeholders = num_placeholders
     if self._num_placeholders is None or self._num_placeholders < 0:
       self._num_placeholders = random.randint(1, _NUM_PLACEHOLDERS)
+
+    if relation is None:
+      self._comparison_relation = random.choice(_COMPARISON_RELATION)
+    elif relation not in _COMPARISON_RELATION:
+      raise ValueError("The supported relation for comparison must be in "
+                       f"{_COMPARISON_RELATION}, but {relation} is given.")
+    else:
+      self._comparison_relation = relation
+
     self._description_pattern = (
-        "応答には少なくとも {num_placeholders} 個のプレースホルダーを含めてください。" +
-        "プレースホルダーは [名前] 、[場所]のように角括弧で表されます。")
+        "La respuesta debe contener {relation} {num_placeholders} marcadores de posición " +
+        "representados por corchetes, como [dirección].")
     return self._description_pattern.format(
+        relation=self._comparison_relation,
         num_placeholders=self._num_placeholders)
 
   def get_instruction_args(self):
     """Returns the keyward args of `build_description`."""
-    return {"num_placeholders": self._num_placeholders}
+    return {"num_placeholders": self._num_placeholders,
+            "relation": self._comparison_relation}
 
   def get_instruction_args_keys(self):
     """Returns the args keys of `build_description`."""
-    return ["num_placeholders"]
+    return ["num_placeholders", "relation"]
 
   def check_following(self, value):
     """Check if the number of placeholders follows the instruction.
@@ -278,6 +306,10 @@ class PlaceholderChecker(Instruction):
     Returns:
       True if the actual number of placeholders in the response is greater than
       or equal to `num_placeholders`; otherwise, False.
+
+      NOTE: The relation here is always (for the moment) "at least", so this checking
+      method applies. If more relations are supported other than "at least",
+      this method needs to be updated.
     """
     placeholders = re.findall(r"\[.*?\]", value)
     num_placeholders = len(placeholders)
@@ -301,10 +333,10 @@ class BulletListChecker(Instruction):
     if self._num_bullets is None or self._num_bullets < 0:
       self._num_bullets = random.randint(1, _NUM_BULLETS)
     self._description_pattern = (
-        "応答はちょうど {num_bullets} 個の箇条書きで構成してください。 " +
-        "以下のような箇条書きの形を参考にしてください:\n" +
-        "・一つめの内容\n" +
-        "・二つめの内容")
+        "Tu respuesta tiene que contener exactamente {num_bullets} puntos de lista. " +
+        "Usa los puntos de lista de Markdown como:\n" +
+        "* Este es el punto 1. \n" +
+        "* Este es el punto 2")
     return self._description_pattern.format(
         num_bullets=self._num_bullets)
 
@@ -317,76 +349,30 @@ class BulletListChecker(Instruction):
     return ["num_bullets"]
 
   def check_following(self, value):
-    r"""Check if the number of bullet lists meets the requirement.
+    """Check if the number of bullet lists meets the requirement.
 
     Args:
       value: A string representing the response. The response is expected to
-        contain some bullet lists that start with `・`.
+        contain some bullet lists that start with `\*`.
 
     Returns:
       True if the actual number of bullet lists in the response meets the
       requirement.
     """
-    bullet_lists = re.findall(r"^\s*・[^\・].*$", value, flags=re.MULTILINE)
+    bullet_lists = re.findall(r"^\s*\*[^\*].*$", value, flags=re.MULTILINE)
     num_bullet_lists = len(bullet_lists)
     return num_bullet_lists == self._num_bullets
 
-
-class NumberedListChecker(Instruction):
-  """Checks the numbered list in the prompt."""
-
-  def build_description(self, *, num_items = None):
-    """Build the instruction description.
-
-    Args:
-      num_bullets: An integer specifying the exact number of numbered lists
-        that is required to appear in the response.
-
-    Returns:
-      A string representing the instruction description.
-    """
-    self._num_items = num_items
-    if self._num_items is None or self._num_items < 0:
-      self._num_items = random.randint(1, _NUM_BULLETS)
-    self._description_pattern = (
-        "応答はちょうど {num_items} 個の番号付きリストで構成してください。 " +
-        "以下のような番号付きリストの形を参考にしてください:\n" +
-        "1. 一つめの内容\n" +
-        "2. 二つめの内容")
-    return self._description_pattern.format(
-        num_items=self._num_items)
-
-  def get_instruction_args(self):
-    """Returns the keyward args of `build_description`."""
-    return {"num_items": self._num_items}
-
-  def get_instruction_args_keys(self):
-    """Returns the args keys of `build_description`."""
-    return ["num_items"]
-
-  def check_following(self, value):
-    r"""Check if the number of numbered lists meets the requirement.
-
-    Args:
-      value: A string representing the response. The response is expected to
-        contain some numbered lists that start with `1.`.
-
-    Returns:
-      A string representing the instruction description.
-    """
-    numbered_lists = re.findall(r"^\s*\d+\.\s.*$", value, flags=re.MULTILINE)
-    num_numbered_lists = len(numbered_lists)
-    return num_numbered_lists == self._num_items
-  
 
 class ConstrainedResponseChecker(Instruction):
   """Checks the constrained response."""
 
   def build_description(self):
     """Build the instruction description."""
-    # A sequence of string(s) representing the options of the expected response.
+    # A sequence of string(s) representing the options of the expected response ("Sí.", "No.", "Quizás.").
     self._constrained_responses = _CONSTRAINED_RESPONSE_OPTIONS
-    self._description_pattern = ("次の選択肢のいずれかで回答してください: {response_options}")
+    self._description_pattern = (
+        "Responde con alguna de las siguientes opciones: {response_options}")
     return self._description_pattern.format(
         response_options=self._constrained_responses)
 
@@ -414,7 +400,8 @@ class ConstrainedResponseChecker(Instruction):
         return True
     return False
 
-
+# ConstrainedStartChecker is not used in the current instructions, so this function has not
+# been reviewed nor adapted to Spanish
 class ConstrainedStartChecker(Instruction):
   """Checks the response start."""
 
@@ -431,7 +418,9 @@ class ConstrainedStartChecker(Instruction):
     self._starter = starter.strip() if isinstance(starter, str) else starter
     if self._starter is None:
       self._starter = random.choice(_STARTER_OPTIONS)
-    self._description_pattern = ("会話中あなたの番になったら、必ず{starter}で応答を始めてください。")
+    self._description_pattern = (
+        "During the conversation, when it is your turn, " +
+        "please always start with {starter}")
     return self._description_pattern.format(starter=self._starter)
 
   def get_instruction_args(self):
@@ -461,12 +450,15 @@ class ConstrainedStartChecker(Instruction):
 class HighlightSectionChecker(Instruction):
   """Checks the highlighted section."""
 
-  def build_description(self, *, num_highlights = None):
+  def build_description(self, *, num_highlights = None,
+                        relation = None):
     """Build the instruction description.
 
     Args:
       num_highlights: An integer specifying the minimum number of highlighted
         sections.
+      relation: A string in (`como máximo` (at maximum), 'al menos' (at least)), defining the relational
+        operator for comparison.
 
     Returns:
       A string representing the instruction description.
@@ -475,18 +467,30 @@ class HighlightSectionChecker(Instruction):
     if self._num_highlights is None or self._num_highlights < 0:
       self._num_highlights = random.randint(1, _NUM_HIGHLIGHTED_SECTIONS)
 
-    self._description_pattern = (
-        "例えば《強調されたセクション》のように、回答の中で少なくとも{num_highlights}つのセクションを《》の記号を用いて強調してください。")
+    if relation is None:
+      self._comparison_relation = random.choice(_COMPARISON_RELATION)
+    elif relation not in _COMPARISON_RELATION:
+      raise ValueError("The supported relation for comparison must be in "
+                       f"{_COMPARISON_RELATION}, but {relation} is given.")
+    else:
+      self._comparison_relation = relation
 
-    return self._description_pattern.format(num_highlights=self._num_highlights)
+    self._description_pattern = (
+        "Resalta {relation} {num_highlights} secciones en tu respuesta con " +
+        "markdown, p.e. *sección subrayada*.")
+
+    return self._description_pattern.format(
+        relation=self._comparison_relation,
+        num_highlights=self._num_highlights)
 
   def get_instruction_args(self):
     """Returns the keyward args of `build_description`."""
-    return {"num_highlights": self._num_highlights}
+    return {"num_highlights": self._num_highlights,
+            "relation": self._comparison_relation}
 
   def get_instruction_args_keys(self):
     """Returns the args keys of `build_description`."""
-    return ["num_highlights"]
+    return ["num_highlights", "relation"]
 
   def check_following(self, value):
     """Checks if the number of highlighted sections meets the requirement.
@@ -497,12 +501,20 @@ class HighlightSectionChecker(Instruction):
 
     Returns:
       True if the actual number of highlighted sections in the format of
-      《highlighed sections》 meets the minimum requirement; otherwise False.
+      *highlighed sections* meets the minimum requirement; otherwise False.
+
+      NOTE: The relation here is always (for the moment) "at least", so this checking
+      method applies. If more relations are supported other than "at least",
+      this method needs to be updated.
     """
     num_highlights = 0
-    highlights = re.findall(r"《[^\n《》]*》", value)
+    highlights = re.findall(r"\*[^\n\*]*\*", value)
+    double_highlights = re.findall(r"\*\*[^\n\*]*\*\*", value)
     for highlight in highlights:
-      if highlight.strip("《》").strip():
+      if highlight.strip("*").strip():
+        num_highlights += 1
+    for highlight in double_highlights:
+      if highlight.removeprefix("**").removesuffix("**").strip():
         num_highlights += 1
 
     return num_highlights >= self._num_highlights
@@ -512,13 +524,15 @@ class SectionChecker(Instruction):
   """Checks the sections."""
 
   def build_description(self, *, section_spliter = None,
-                        num_sections = None):
+                        num_sections = None, relation = None):
     """Build the instruction description.
 
     Args:
       section_spliter: A string represents the section spliter keyword that
-        marks a new section, i.e., `章` or `節`.
+        marks a new section, i.e., `Sección` or `SECCIÓN`.
       num_sections: An integer specifying the number of sections.
+      relation: A string in (`como máximo` (at maximum), 'al menos' (at least)), defining the relational
+        operator for comparison.
 
     Returns:
       A string representing the instruction description.
@@ -532,26 +546,36 @@ class SectionChecker(Instruction):
     if self._num_sections is None or self._num_sections < 0:
       self._num_sections = random.randint(1, _NUM_SECTIONS)
 
+    if relation is None:
+      self._comparison_relation = random.choice(_COMPARISON_RELATION)
+    elif relation not in _COMPARISON_RELATION:
+      raise ValueError("The supported relation for comparison must be in "
+                       f"{_COMPARISON_RELATION}, but {relation} is given.")
+    else:
+      self._comparison_relation = relation
+
     self._description_pattern = (
-        "あなたは{num_sections}つのセクションで文章を構成させて応答してください。" +
-        "各セクションの始まりは次のように数字と{section_spliter}から書き始めてください。例:\n" +
-        "第1{section_spliter}\n" +
-        "[セクション1の内容]\n" +
-        "第2{section_spliter}\n" +
-        "[セクション2の内容]")
+        "Tu respuesta debe tener {relation} {num_sections} secciones. Marca el principio " +
+        "de cada sección con {section_spliter} X, tal como:\n" +
+        "{section_spliter} 1\n" +
+        "[contenido de sección 1]\n" +
+        "{section_spliter} 2\n" +
+        "[contenido de sección 2]")
 
     return self._description_pattern.format(
         num_sections=self._num_sections,
-        section_spliter=self._section_spliter)
+        section_spliter=self._section_spliter,
+        relation=self._comparison_relation)
 
   def get_instruction_args(self):
     """Returns the keyward args of `build_description`."""
     return {"section_spliter": self._section_spliter,
-            "num_sections": self._num_sections}
+            "num_sections": self._num_sections,
+            "relation": self._comparison_relation}
 
   def get_instruction_args_keys(self):
     """Returns the args keys of `build_description`."""
-    return ["section_spliter", "num_sections"]
+    return ["section_spliter", "num_sections", "relation"]
 
   def check_following(self, value):
     """Checks the response contains multiple sections.
@@ -559,14 +583,18 @@ class SectionChecker(Instruction):
     Args:
       value: A string representing the response. The response is expected
         to contain multiple sections (number of sections is greater than 1).
-        A new section starts with `第１章`, where the number denotes the
+        A new section starts with `Section 1`, where the number denotes the
         section index.
 
     Returns:
       True if the number of sections in the response is greater than or equal to
       the minimum number of sections; otherwise, False.
+
+      NOTE: The relation here is always (for the moment) "at least", so this checking
+      method applies. If more relations are supported other than "at least",
+      this method needs to be updated.
     """
-    section_splitter_patten = r"\s?" + r"第[\d\uFF10-\uFF19]+" + self._section_spliter + r"\s?"
+    section_splitter_patten = r"\s?" + self._section_spliter  + r"\s?\d+\s?"
     sections = re.split(section_splitter_patten, value)
     num_sections = len(sections) - 1
     return num_sections >= self._num_sections
@@ -589,7 +617,8 @@ class ParagraphChecker(Instruction):
       self._num_paragraphs = random.randint(1, _NUM_PARAGRAPHS)
 
     self._description_pattern = (
-        "応答は{num_paragraphs}個の段落に分かれた文章で送ってください。それぞれの段落をマークダウンの区切り記号: *** で区切ってください。")
+        "Debe haber {num_paragraphs} párrafos. " +
+        "Los párrafos están separados por el divisor de markdown: ***")
 
     return self._description_pattern.format(num_paragraphs=self._num_paragraphs)
 
@@ -628,7 +657,8 @@ class ParagraphChecker(Instruction):
 class PostscriptChecker(Instruction):
   """Checks the postscript."""
 
-  def build_description(self, *, postscript_marker = None):
+  def build_description(self, *, postscript_marker = None
+                        ):
     """Build the instruction description.
 
     Args:
@@ -638,12 +668,14 @@ class PostscriptChecker(Instruction):
     Returns:
       A string representing the instruction description.
     """
-    self._postscript_marker = postscript_marker.strip() if isinstance(postscript_marker, str) else postscript_marker
+    self._postscript_marker = postscript_marker.strip() if isinstance(
+        postscript_marker, str) else postscript_marker
     if self._postscript_marker is None:
       self._postscript_marker = random.choice(_POSTSCRIPT_MARKER)
 
-    self._description_pattern = ("応答の最後に、{postscript}で始まる追伸を追加してください。")
-
+    self._description_pattern = (
+        "Al final de la respuesta, por favor añade explícitamente una posdata " +
+        "que empiece por {postscript}")
 
     return self._description_pattern.format(postscript=self._postscript_marker)
 
@@ -666,16 +698,18 @@ class PostscriptChecker(Instruction):
       True if the response contains a postscript section starting with
       the keyword containing in the `instruction_args`; otherwise False.
     """
-    if self._postscript_marker == "P.P.S":
-      postscript_pattern = r"\s*p\.\s?p\.\s?s.*$"
-    elif self._postscript_marker == "P.S.":
-      postscript_pattern = r"\s*p\.\s?s\..*$"
+    value = value.lower()
+    if self._postscript_marker == "P.D.":
+      postscript_pattern = r"\s*p\.\s?d\..*$"
+    elif self._postscript_marker == "Nota":
+      postscript_pattern = r"\s*nota.*$"
     else:
-      postscript_pattern = r"\s*" + re.escape(self._postscript_marker) + r".*$"
-    postscript = re.findall(postscript_pattern, value, flags=re.IGNORECASE | re.MULTILINE)
+      postscript_pattern = r"\s*" + self._postscript_marker.lower() + r".*$"
+    postscript = re.findall(postscript_pattern, value, flags=re.MULTILINE)
     return True if postscript else False
 
-
+# RephraseChecker is not used in the current instructions, so this +
+# function has not been reviewed nor adapted to Spanish
 class RephraseChecker(Instruction):
   """Checks the repharse."""
 
@@ -685,19 +719,20 @@ class RephraseChecker(Instruction):
     Args:
       original_message: A string representing the original message. The
         rephrased response should only change its words/sentences in between
-        its two curly brackets, for example, {change me}. Both original and rephrased
-        messages should contain the changes in the form of {change me}.
+        its two asterisks, for example, *change me*. Both original and rephrased
+        messages should contain the changes in the form of *change me*.
 
     Returns:
       A string representing the instruction description.
     """
     if not self.is_change(original_message):
       raise ValueError(f"Message {original_message} does not contain changes "
-                       "in the form of {change me}.")
+                       "in the form of *change me*.")
 
     self._reference_without_change = original_message
-    self._description = ("例えば {ここを変更} のように、元の文章を波括弧で囲まれた部分のみを変更して応答してください")
-
+    self._description = ("Rephrasing: Your rephrased response should only" +
+                         "change the words/sentences in between two asterisks" +
+                         "such as *change me*.")
     return self._description
 
   def get_instruction_args(self):
@@ -722,7 +757,7 @@ class RephraseChecker(Instruction):
 
     if not self.is_change(value):
       raise ValueError(f"value {value} does not contain "
-                       "changes in the form of {change me}.")
+                       "changes in the form of *change me*.")
 
     response_without_changes = self.strip_changes(value)
     reference_without_changes = self.strip_changes(
@@ -732,17 +767,18 @@ class RephraseChecker(Instruction):
 
   def is_change(self, response):
     """Check if there is change in the response in the form of *change me*."""
-    return re.search(r"\{.*\}", response)
+    return re.search(r"\*.*\*", response)
 
   def strip_changes(self, response):
     """Strips off the changes."""
-    return re.sub(r"\{.*\}", "", response)
+    return re.sub(r"\*.*\*", "", response)
 
 
 class KeywordChecker(Instruction):
   """Check the exisitence of certain keywords."""
 
-  def build_description(self, *, keywords = None):
+  def build_description(self, *, keywords = None
+                        ):
     """Build the instruction description.
 
     Args:
@@ -754,12 +790,13 @@ class KeywordChecker(Instruction):
     """
 
     if not keywords:
-      self._keywords = ja_instructions_util.generate_keywords(num_keywords=_NUM_KEYWORDS)
+      self._keywords = es_instructions_util.generate_keywords(
+          num_keywords=_NUM_KEYWORDS)
     else:
       self._keywords = keywords
     self._keywords = sorted(self._keywords)
 
-    self._description_pattern = ("応答に次のキーワード {keywords} を含めてください。")
+    self._description_pattern = ("Incluye las palabras clave {keywords} en tu respuesta.")
 
     return self._description_pattern.format(keywords=self._keywords)
 
@@ -773,11 +810,8 @@ class KeywordChecker(Instruction):
 
   def check_following(self, value):
     """Check if the response contain the expected keywords."""
-    tokens = ja_instructions_util.tokenizing_texts(value)
-    val_words = [token.surface for token in tokens]
-
     for keyword in self._keywords:
-      if not keyword in val_words:
+      if not re.search(keyword, value, flags=re.IGNORECASE):
         return False
     return True
 
@@ -794,17 +828,17 @@ class KeywordFrequencyChecker(Instruction):
       keyword: A string representing a keyword that is expected in the response.
       frequency: An integer specifying the number of times `keyword` is expected
         to appear in the response.
-      relation: A string in (`未満`, `以上`), defining the relational
+      relation: A string in (`como máximo`, `al menos'), defining the relational
         operator for comparison.
         Two relational comparisons are supported for now:
-        if '未満', the actual number of occurrences < frequency;
-        if '以上', the actual number of occurrences >= frequency.
+        if 'como máximo', the actual number of occurrences <= frequency;
+        if 'al menos', the actual number of occurrences >= frequency.
 
     Returns:
       A string representing the instruction description.
     """
     if not keyword:
-      self._keyword = ja_instructions_util.generate_keywords(num_keywords=1)[0]
+      self._keyword = es_instructions_util.generate_keywords(num_keywords=1)[0]
     else:
       self._keyword = keyword.strip()
 
@@ -821,7 +855,8 @@ class KeywordFrequencyChecker(Instruction):
       self._comparison_relation = relation
 
     self._description_pattern = (
-        "応答の中で、{keyword} という単語を{frequency}回{relation}出現させてください。")
+        "En tu respuesta, la palabra {keyword} debe aparecer {relation} " +
+        "{frequency} veces.")
 
     return self._description_pattern.format(
         keyword=self._keyword,
@@ -840,40 +875,39 @@ class KeywordFrequencyChecker(Instruction):
 
   def check_following(self, value):
     """Checks if the response contain the keyword with required frequency."""
-    tokens = ja_instructions_util.tokenizing_texts(value)
-    val_words = [token.surface for token in tokens]
-    dict_val = collections.Counter(val_words)
-    actual_occurrences = dict_val[self._keyword]
+    actual_occurrences = len(re.findall(
+        self._keyword, value, flags=re.IGNORECASE))
 
     if self._comparison_relation == _COMPARISON_RELATION[0]:
-      return actual_occurrences < self._frequency
-    elif self._comparison_relation == _COMPARISON_RELATION[1]:
       return actual_occurrences >= self._frequency
+    elif self._comparison_relation == _COMPARISON_RELATION[1]:
+      return actual_occurrences <= self._frequency
 
 
-class NumberOfLetters(Instruction):
-  """Checks the number of letters."""
+class NumberOfWords(Instruction):
+  """Checks the number of words."""
 
-  def build_description(self, *, num_letters=None, relation=None):
+  def build_description(self, *, num_words = None,
+                        relation = None):
     """Build the instruction description.
 
     Args:
-      num_letters: An integer specifying the number of letters contained in the
+      num_words: An integer specifying the number of words contained in the
         response.
-      relation: A string in (`未満`, `以上`), defining the relational
+      relation: A string in (`Como máximo`, `al menos`), defining the relational
         operator for comparison.
         Two relational comparisons are supported for now:
-        if '未満', the actual number of words < num_words;
-        if '以上', the actual number of words >= num_words.
+        if 'less than', the actual number of words >= num_words;
+        if 'at least', the actual number of words <= num_words.
 
     Returns:
       A string representing the instruction description.
     """
 
-    self._num_letters = num_letters
-    if self._num_letters is None or self._num_letters < 0:
-      self._num_letters = random.randint(
-          _NUM_LETTERS_LOWER_LIMIT, _NUM_LETTERS_UPPER_LIMIT
+    self._num_words = num_words
+    if self._num_words is None or self._num_words < 0:
+      self._num_words = random.randint(
+          _NUM_WORDS_LOWER_LIMIT, _NUM_WORDS_UPPER_LIMIT
       )
 
     if relation is None:
@@ -885,29 +919,35 @@ class NumberOfLetters(Instruction):
       self._comparison_relation = relation
 
     self._description_pattern = (
-        "{num_letters}文字{relation}で答えてください。")
+        "Responde con {relation} {num_words} palabras.")
 
     return self._description_pattern.format(
         relation=self._comparison_relation,
-        num_letters=self._num_letters)
+        num_words=self._num_words)
 
   def get_instruction_args(self):
     """Returns the keyward args of `build_description`."""
-    return {"num_letters": self._num_letters,
+    return {"num_words": self._num_words,
             "relation": self._comparison_relation}
 
   def get_instruction_args_keys(self):
     """Returns the args keys of `build_description`."""
-    return ["num_letters", "relation"]
+    return ["num_words", "relation"]
 
   def check_following(self, value):
-    """Checks if the response contains the expected number of letters."""
-    num_letters = len(value)
+    """Checks if the response contains the expected number of words."""
+
+    # Remove common bullet points like '-', '*', and numbered lists like '1.', '2.'
+    # Only removes numbers that are bullet points because the pattern is anchored at the beginning of the sentence.
+    cleaned_text = re.sub(r'(^\s*[\d]+\.\s*)|(^\s*[-*]\s*)', '', value, flags=re.MULTILINE)
+    cleaned_text_without_newlines = cleaned_text.replace('\n', ' ')
+      
+    num_words = es_instructions_util.count_words(cleaned_text_without_newlines)
 
     if self._comparison_relation == _COMPARISON_RELATION[0]:
-      return num_letters < self._num_letters
+      return num_words >= self._num_words
     elif self._comparison_relation == _COMPARISON_RELATION[1]:
-      return num_letters >= self._num_letters
+      return num_words <= self._num_words
 
 
 class JsonFormat(Instruction):
@@ -915,7 +955,7 @@ class JsonFormat(Instruction):
 
   def build_description(self):
     self._description_pattern = (
-        "マークダウンのバッククォート（```）などを使用して、出力全体をJSON形式で囲んでください。"
+        "El output completo debe estar en formato JSON"
     )
     return self._description_pattern
 
@@ -927,6 +967,9 @@ class JsonFormat(Instruction):
     """Returns the args keys of `build_description`."""
     return []
 
+# In the case of spanish instructions, this format with ``` is not requested, 
+# but this is left here in case any evaluated output shows JSON code blocks in
+# markdown format.
   def check_following(self, value):
     value = (
         value.strip()
@@ -977,13 +1020,14 @@ class ParagraphFirstWordCheck(Instruction):
 
     self._first_word = first_word
     if self._first_word is None:
-      self._first_word = ja_instructions_util.generate_keywords(num_keywords=1)[0]
+      self._first_word = es_instructions_util.generate_keywords(num_keywords=1)[0]
     self._first_word = self._first_word.lower()
 
     self._description_pattern = (
-        "{num_paragraphs}個の段落に分けて応答を書いてください。 " +
-        "Pythonだと'\\n\\n'で表されるように、段落はそれぞれ2つの改行で区切ってください。 " +
-        "{nth_paragraph}段落目は「{first_word} 」という単語で書き始めてください。")
+        "Debe haber {num_paragraphs} párrafos. " +
+        "Párrafos y sólo párrafos estarán separados entre sí por dos " +
+        "saltos de línea. El párrafo {nth_paragraph} debe comenzar con la " +
+        "palabra {first_word}.")
 
     return self._description_pattern.format(
         num_paragraphs=self._num_paragraphs,
@@ -1020,6 +1064,7 @@ class ParagraphFirstWordCheck(Instruction):
       if not paragraph.strip():
         num_paragraphs -= 1
 
+    # check that index doesn't go out of bounds
     if self._nth_paragraph <= num_paragraphs:
       paragraph = paragraphs[self._nth_paragraph - 1].strip()
       if not paragraph:
@@ -1027,18 +1072,33 @@ class ParagraphFirstWordCheck(Instruction):
     else:
       return False
 
-    paragraph = paragraph.lstrip("「")
-    paragraph = paragraph.lstrip("『")
+    # Helper function to remove punctuation from a word
+    def remove_punctuation(word):
+        return ''.join(char for char in word if char not in string.punctuation)
 
-    first_word = paragraph[:len(self._first_word)]
+    #Calculate how many words have to be extracted from the nth paragraph to compare
+    expected_words = self._first_word.split()
+    num_expected_words = len(expected_words)
+
+    # Get words of the nth paragraph and remove punctuation
+    paragraph_words = [remove_punctuation(word).lower() for word in paragraph.split()]
+
+    # Return False if we are looking for more words than the paragraph has
+    if len(paragraph_words) < num_expected_words:
+        return False
+
+    # Extract the first `num_expected_words` words from the paragraph
+    extracted_words = paragraph_words[:num_expected_words]
 
     return (
         num_paragraphs == self._num_paragraphs
-        and first_word == self._first_word
+        and extracted_words == expected_words
     )
 
 
 # TODO(jeffrey) add relation - at least/at most?
+# KeySentenceChecker is not used in the current instructions, so this +
+# function has not been reviewed nor adapted to Spanish
 class KeySentenceChecker(Instruction):
   """Check the existence of certain key sentences."""
 
@@ -1068,7 +1128,7 @@ class KeySentenceChecker(Instruction):
       self._num_sentences = num_sentences
 
     self._description_pattern = (
-        "応答には次の文章を{num_sentences}回入れてください：{key_sentences}"
+        "Include {num_sentences} of the following sentences {key_sentences}"
     )
 
     return self._description_pattern.format(
@@ -1087,7 +1147,7 @@ class KeySentenceChecker(Instruction):
   def check_following(self, value):
     """Checks if the response contains the expected key sentences."""
     count = 0
-    sentences = ja_instructions_util.split_into_sentences(value)
+    sentences = es_instructions_util.split_into_sentences(value)
     for sentence in self._key_sentences:
       if sentence in sentences:
         count += 1
@@ -1111,13 +1171,13 @@ class ForbiddenWords(Instruction):
     """
 
     if not forbidden_words:
-      self._forbidden_words = ja_instructions_util.generate_keywords(
+      self._forbidden_words = es_instructions_util.generate_keywords(
           num_keywords=_NUM_KEYWORDS)
     else:
       self._forbidden_words = list(set(forbidden_words))
     self._forbidden_words = sorted(self._forbidden_words)
     self._description_pattern = (
-        "応答に {forbidden_words} という単語を含めないでください。"
+        "No incluyas las palabras clave {forbidden_words} en tu respuesta."
     )
 
     return self._description_pattern.format(
@@ -1134,14 +1194,13 @@ class ForbiddenWords(Instruction):
 
   def check_following(self, value):
     """Check if the response does not contain the expected keywords."""
-    tokens = ja_instructions_util.tokenizing_texts(value)
-    words = [token.surface for token in tokens]
     for word in self._forbidden_words:
-      if word in words:
+      if re.search(r"\b" + word + r"\b", value, flags=re.IGNORECASE):
         return False
     return True
 
-
+# RephraseParagraph is not used in the current instructions, so this +
+# function has not been reviewed nor adapted to Spanish yet
 class RephraseParagraph(Instruction):
   """Checks that the paragraph is rephrased."""
 
@@ -1163,13 +1222,13 @@ class RephraseParagraph(Instruction):
     self._low = low
     self._high = high
 
-    self._description = (
-      "次の文章を言い換えてください: " +
-      "{original_paragraph}\nあなたの回答には、" +
-      "元の文章に含まれている単語を{low}個から{high}個含める必要があります。" +
-      "単語が同じであるとみなされるのは、すべての文字が同じ場合のみです。" +
-      "例えば、'あめ'と'アメ'と'雨'は異なります。"
-    )
+    self._description = ("Rephrase the following paragraph: " +
+                         "{original_paragraph}\nYour response should have " +
+                         "between {low} and {high} of the same words. " +
+                         "Words are the same if and only if all of the " +
+                         "letters, ignoring cases, are the same. For " +
+                         "example, 'run' is the same as 'Run' but different " +
+                         "to 'ran'.")
 
     return self._description.format(original_paragraph=original_paragraph,
                                     low=self._low, high=self._high)
@@ -1185,15 +1244,13 @@ class RephraseParagraph(Instruction):
     return ["original_paragraph", "low", "high"]
 
   def check_following(self, value):
-    tokens_value = ja_instructions_util.tokenizing_texts(value)
-    tokens_original = ja_instructions_util.tokenizing_texts(self._original_paragraph)
-    val_words = [token.surface for token in tokens_value if not (token.part_of_speech.startswith('助詞') or token.part_of_speech.startswith('助動詞') or token.part_of_speech.startswith('記号'))]
-    original_words = [token.surface for token in tokens_original if not (token.part_of_speech.startswith('助詞') or token.part_of_speech.startswith('助動詞') or token.part_of_speech.startswith('記号'))]
+    val_words = re.findall(r"\w+", value.lower())
+    original_words = re.findall(r"\w+", self._original_paragraph.lower())
+    similar_words = 0
 
     dict_val = collections.Counter(val_words)
     dict_original = collections.Counter(original_words)
 
-    similar_words = 0
     for word in dict_original:
       similar_words += min(dict_original[word], dict_val[word])
 
@@ -1206,7 +1263,8 @@ class TwoResponsesChecker(Instruction):
   def build_description(self):
     """Build the instruction description."""
     self._description_pattern = (
-        "2種類の異なる答え方をしてください。回答のみを出力し、それぞれの回答はアスタリスク6個（******）で区切ってください。"
+        "Da dos respuestas diferentes. Respuestas y sólo respuestas deben"
+        " estar separadas por 6 símbolos de asterisco: ******."
     )
     return self._description_pattern
 
@@ -1258,13 +1316,13 @@ class RepeatPromptThenAnswer(Instruction):
     else:
       self._prompt_to_repeat = prompt_to_repeat
     self._description_pattern = (
-        "最初にリクエストを一言一句変えずに繰り返し、その後に答えを述べてください"
-        "（1. 繰り返す前に言葉や文字を追加しないこと; 2. 繰り返すべきリクエストにはこの文を含めないこと）"
+        "Primero, repite la petición sin cambios, luego da tu respuesta "
+        "(no digas nada antes de repetir la petición; la petición que necesitas"
+        " repetir no incluye esta frase)."
     )
     return self._description_pattern
 
   def get_instruction_args(self):
-    """Returns the keyword args of build description."""
     return {"prompt_to_repeat": self._prompt_to_repeat}
 
   def get_instruction_args_keys(self):
@@ -1272,7 +1330,7 @@ class RepeatPromptThenAnswer(Instruction):
     return ["prompt_to_repeat"]
 
   def check_following(self, value):
-    if value.strip().startswith(self._prompt_to_repeat.strip()):
+    if value.strip().lower().startswith(self._prompt_to_repeat.strip().lower()):
       return True
     return False
 
@@ -1295,12 +1353,11 @@ class EndChecker(Instruction):
     if self._end_phrase is None:
       self._end_phrase = random.choice(_ENDING_OPTIONS)
     self._description_pattern = (
-        "応答の最後に次のフレーズをそのまま出力してください: {ender}。"
-        "このフレーズの後に他の言葉を続けてはいけません。")
+        "Termina tu respuesta con esta frase exacta {ender}. "
+        "Ninguna otra palabra debe seguir esta frase.")
     return self._description_pattern.format(ender=self._end_phrase)
 
   def get_instruction_args(self):
-    """Returns the keyword args of build description."""
     return {"end_phrase": self._end_phrase}
 
   def get_instruction_args_keys(self):
@@ -1309,23 +1366,27 @@ class EndChecker(Instruction):
 
   def check_following(self, value):
     """Checks if the response ends with the expected phrase."""
-    value = value.strip().strip("」』")
-    self._end_phrase = self._end_phrase.strip().strip("」』")
+    value = value.strip().strip("\"").lower()
+    self._end_phrase = self._end_phrase.strip().lower()
+    # Check if the last character in value is a dot (.)
+    if value and value[-1] == ".":
+    # Remove the dot before checking if it ends with the expected end_phrase kwarg
+        value = value[:-1]
     return value.endswith(self._end_phrase)
 
-  
+
 class TitleChecker(Instruction):
   """Checks the response for a title."""
 
   def build_description(self):
     """Build the instruction description."""
     self._description_pattern = (
-        "例えば『喜びの詩』のように、応答に二重鉤括弧で囲まれたタイトルをつけてください。"
+        "Tu respuesta debe contener un título, envuelto en dobles corchetes "
+        "angulares, como <<poema de alegría>>."
     )
     return self._description_pattern
 
   def get_instruction_args(self):
-    """Returns the keyword args of build description."""
     return None
 
   def get_instruction_args_keys(self):
@@ -1334,12 +1395,12 @@ class TitleChecker(Instruction):
 
   def check_following(self, value):
     """Checks if the response contains a title."""
-    pattern = r"『[^\n]+』"
+    pattern = r"<<[^\n]+>>"
     re_pattern = re.compile(pattern)
     titles = re.findall(re_pattern, value)
 
     for title in titles:
-      if title.lstrip("『").rstrip("』").strip():
+      if title.lstrip("<").rstrip(">").strip():
         return True
     return False
 
@@ -1356,19 +1417,25 @@ class LetterFrequencyChecker(Instruction):
       letter: A string representing a letter that is expected in the response.
       let_frequency: An integer specifying the number of times `keyword` is
         expected to appear in the response.
-      let_relation: A string in (`未満`, `以上`), defining the
+      let_relation: A string in (`less than`, `at least`), defining the
         relational operator for comparison. Two relational comparisons are
-        supported for now; if '未満', the actual number of
-        occurrences < frequency; if '以上', the actual number of
+        supported for now; if 'less than', the actual number of
+        occurrences < frequency; if 'at least', the actual number of
         occurrences >= frequency.
 
     Returns:
       A string representing the instruction description.
     """
-    if not letter or len(letter) > 1 or not ('ぁ' <= letter <= 'ん'):
-      self._letter = random.choice([chr(i) for i in range(ord('ぁ'), ord('ん') + 1)])
+    if (
+        not letter
+        or len(letter) > 1
+        or ord(letter.lower()) < 97
+        or ord(letter.lower()) > 122
+    ):
+      self._letter = random.choice(list(string.ascii_letters))
     else:
       self._letter = letter.strip()
+    self._letter = self._letter.lower()
 
     self._frequency = let_frequency
     if self._frequency is None or self._frequency < 0:
@@ -1385,7 +1452,8 @@ class LetterFrequencyChecker(Instruction):
       self._comparison_relation = let_relation
 
     self._description_pattern = (
-        "応答には、文字「{letter}」を{let_frequency}回{let_relation}出現させてください。"
+        "En tu respuesta, la letra {letter} debería aparecer {let_relation}"
+        " {let_frequency} veces."
     )
 
     return self._description_pattern.format(
@@ -1406,30 +1474,26 @@ class LetterFrequencyChecker(Instruction):
 
   def check_following(self, value):
     """Checks that the response contains the letter at the right frequency."""
+    value = value.lower()
     letters = collections.Counter(value)
 
-    katakana_letter = chr(ord(self._letter) + 96)
-
-    total_count = letters[self._letter] + letters[katakana_letter]
-
     if self._comparison_relation == _COMPARISON_RELATION[0]:
-        return total_count < self._frequency
+      return letters[self._letter] >= self._frequency
     else:
-        return total_count >= self._frequency
-  
+      return letters[self._letter] <= self._frequency
 
-class PeriodChecker(Instruction):
-  """Checks the response for no periods."""
+
+class CapitalLettersSpanishChecker(Instruction):
+  """Checks that the response is in spanish and is in all capital letters."""
 
   def build_description(self):
     """Build the instruction description."""
     self._description_pattern = (
-        "応答全体で句点を使用しないでください。"
+        "Tu respuesta debe estar en español al completo, sólo letras mayúsculas."
     )
     return self._description_pattern
 
   def get_instruction_args(self):
-    """Returns the keyword args of build description."""
     return None
 
   def get_instruction_args_keys(self):
@@ -1437,8 +1501,60 @@ class PeriodChecker(Instruction):
     return []
 
   def check_following(self, value):
-    """Checks that the response does not contain periods."""
-    return not re.search(r"\。", value)
+    """Checks that the response is in Spanish and in all capital letters."""
+    assert isinstance(value, str)
+
+    # Normalize the string to handle accented characters and diacritics 
+    # It decomposes the characters into their base form and diacritics, using the using the NFKD normalization form.
+    normalized_value = unicodedata.normalize('NFKD', value)
+
+    # Check if all normalized, alphabetic characters are uppercase, ignoring non-alphabetic characters
+    is_uppercase = all(
+        (c.isupper() or not c.isalpha()) for c in normalized_value
+        if not unicodedata.combining(c)  # Skip diacritics
+    )
+
+    #NOTE: langdetect works with the original value since the decomposition of the characters in the normalization could affect the language detection.
+    try:
+      return is_uppercase and langdetect.detect(value.lower()) == "es"
+    except langdetect.LangDetectException as e:
+      # Count as instruction is followed.
+      logging.error(
+          "Unable to detect language for text %s due to %s", value, e
+      )  
+      return True
+
+
+class LowercaseLettersSpanishChecker(Instruction):
+  """Checks that the response is in english and is in all lowercase letters."""
+
+  def build_description(self):
+    """Build the instruction description."""
+    self._description_pattern = (
+        "Tu respuesta debe estar en español al completo, sólo letras "
+        "minúsculas. Las letras mayúsculas no están permitidas."
+    )
+    return self._description_pattern
+
+  def get_instruction_args(self):
+    return None
+
+  def get_instruction_args_keys(self):
+    """Returns the args keys of `build_description`."""
+    return []
+
+  def check_following(self, value):
+    """Checks that the response is in English and in all lowercase letters."""
+    assert isinstance(value, str)
+
+    try:
+      return value.islower() and langdetect.detect(value) == "es"
+    except langdetect.LangDetectException as e:
+      # Count as instruction is followed.
+      logging.error(
+          "Unable to detect language for text %s due to %s", value, e
+      )  # refex: disable=pytotw.037
+      return True
 
 
 class CommaChecker(Instruction):
@@ -1447,12 +1563,11 @@ class CommaChecker(Instruction):
   def build_description(self):
     """Build the instruction description."""
     self._description_pattern = (
-        "応答全体で読点を使用しないでください。"
+        "En la totalidad de la respuesta, abstente de usar comas."
     )
     return self._description_pattern
 
   def get_instruction_args(self):
-    """Returns the keyword args of build description."""
     return None
 
   def get_instruction_args_keys(self):
@@ -1461,16 +1576,82 @@ class CommaChecker(Instruction):
 
   def check_following(self, value):
     """Checks that the response does not contain commas."""
-    return not re.search(r"\、", value)
+    return not re.search(r"\,", value)
+
+
+class CapitalWordFrequencyChecker(Instruction):
+  """Checks frequency of words with all capital letters."""
+
+  def build_description(
+      self,
+      capital_frequency = None,
+      capital_relation = None,
+  ):
+    """Build the instruction description.
+
+    Args:
+      capital_frequency: An integer that represents the number of words that
+        should be in all capital letters.
+      capital_relation: A string that is 'at least' or 'at most' that refers to
+        the frequency.
+
+    Returns:
+      A string representing the instruction description.
+    """
+    self._frequency = capital_frequency
+    if self._frequency is None:
+      self._frequency = random.randint(1, _ALL_CAPITAL_WORD_FREQUENCY)
+
+    self._comparison_relation = capital_relation
+    if capital_relation is None:
+      self._comparison_relation = random.choice(_COMPARISON_RELATION)
+    elif capital_relation not in _COMPARISON_RELATION:
+      raise ValueError(
+          "The supported relation for comparison must be in "
+          f"{_COMPARISON_RELATION}, but {capital_relation} is given."
+      )
+
+    self._description_pattern = (
+        "En tu respuesta, palabras escritas al completo con letras mayúsculas "
+        "deberían aparecer {relation} {frequency} veces."
+    )
+
+    return self._description_pattern.format(
+        frequency=self._frequency, relation=self._comparison_relation
+    )
+
+  def get_instruction_args(self):
+    """Returns the keyword args of build description."""
+    return {
+        "capital_frequency": self._frequency,
+        "capital_relation": self._comparison_relation,
+    }
+
+  def get_instruction_args_keys(self):
+    """Returns the args keys of `build_description`."""
+    return ["capital_frequency", "capital_relation"]
+
+  def check_following(self, value):
+    """Checks the frequency of words with all capital letters."""
+    # Hyphenated words will usually count as one word using Spacy
+    words = es_instructions_util.tokenize_words(value)
+    capital_words = [word for word in words if word.isupper()]
+
+    capital_words = len(capital_words)
+
+    if self._comparison_relation == _COMPARISON_RELATION[0]:
+      return capital_words >= self._frequency
+    else:
+      return capital_words <= self._frequency
 
 
 class QuotationChecker(Instruction):
-  """Checks response is wrapped with quotation marks."""
+  """Checks response is wrapped with double quotation marks."""
 
   def build_description(self):
     """Build the instruction description."""
     self._description_pattern = (
-        "応答全体を鉤括弧で囲んでください。"
+        "Envuelve la totalidad de tu respuesta en comillas dobles."
     )
     return self._description_pattern
 
@@ -1485,19 +1666,19 @@ class QuotationChecker(Instruction):
   def check_following(self, value):
     """Checks if the response is wrapped with double quotation marks."""
     value = value.strip()
-    return len(value) > 1 and value[0] == '「' and value[-1] == '」'
-  
+    return len(value) > 1 and value[0] == '"' and value[-1] == '"'
 
-class FuriganaForKanji(Instruction):
-  """Checks all kanji is described with furigana."""
+
+class QuestionMarkChecker(Instruction):
+  """Checks response includes a question wrapped with question marks ¿?."""
 
   def build_description(self):
     """Build the instruction description."""
     self._description_pattern = (
-        "全ての漢字にふりがなをつけてください。ふりがなは全角の括弧（）の中に書いてください。"
+        "Tu respuesta debe incluir una pregunta."
     )
     return self._description_pattern
-  
+
   def get_instruction_args(self):
     """Returns the keyword args of build description."""
     return None
@@ -1507,33 +1688,179 @@ class FuriganaForKanji(Instruction):
     return []
 
   def check_following(self, value):
-    """Checks if all kanji is described with furigana"""
-    kanji_pattern = r'[\u4e00-\u9faf]+'
-    kanji_with_furigana_pattern = r'[\u4e00-\u9faf]+（[ぁ-ん]+）'
+    """Checks if the response contains a question."""
+    pattern = r"¿[^?]*\?"
+    re_pattern = re.compile(pattern)
+    questions = re.findall(re_pattern, value)
 
-    kanji_count = len(re.findall(kanji_pattern, value))
-    kanji_with_furigana_count = len(re.findall(kanji_with_furigana_pattern, value))
+    for question in questions:
+      if question.lstrip("¿").rstrip("?").strip():
+        return True
+    return False
 
-    return kanji_count == kanji_with_furigana_count
+
+class ExclamationMarkChecker(Instruction):
+  """Checks response includes a question wrapped with question marks ¿?."""
+
+  def build_description(self):
+    """Build the instruction description."""
+    self._description_pattern = (
+        "Tu respuesta debe incluir una exclamación."
+    )
+    return self._description_pattern
+
+  def get_instruction_args(self):
+    """Returns the keyword args of build description."""
+    return None
+
+  def get_instruction_args_keys(self):
+    """Returns the args keys of `build_description`."""
+    return []
+
+  def check_following(self, value):
+    """Checks if the response contains a question."""
+    pattern = r"¡[^!]*\!"
+    re_pattern = re.compile(pattern)
+    exclamations = re.findall(re_pattern, value)
+
+    for exclamation in exclamations:
+      if exclamation.lstrip("¡").rstrip("!").strip():
+        return True
+    return False
 
 
-class KanjiLimit(Instruction):
-  """Check the number of Kanji used in the reponse"""
+class EnieChecker(Instruction):
+  """Checks frequency of words with Spanish special character ñ (enie)."""
 
-  def build_description(self, *, kanji_limit=None, relation=None):
+  def build_description(
+      self,
+      let_frequency = None,
+  ):
     """Build the instruction description.
 
     Args:
-      kanji_limit: An integer specifying the number of kanji to be used.
-      relation: A string in (`未満`, `以上`), defining the relational operator for comparison.
+      let_frequency: An integer that represents the number of words that
+        contains the letter enie.
 
     Returns:
-      A string representing the instruction.
+      A string representing the instruction description.
     """
-    self._kanji_limit = kanji_limit
-    if self._kanji_limit is None or self._kanji_limit < 0:
-      self._kanji_limit = random.randint(1, _KANJI_NUM)
-    
+    self._frequency = let_frequency
+    if self._frequency is None:
+      self._frequency = random.randint(1, _LETTER_FREQUENCY)
+
+    self._description_pattern = (
+        "En tu respuesta, palabras con la letra ñ deben aparecer "
+        "{frequency} veces."
+    )
+
+    return self._description_pattern.format(
+        frequency=self._frequency,
+    )
+
+  def get_instruction_args(self):
+    """Returns the keyword args of build description."""
+    return {
+        "let_frequency": self._frequency
+    }
+
+  def get_instruction_args_keys(self):
+    """Returns the args keys of `build_description`."""
+    return ["let_frequency"]
+
+  def check_following(self, value):
+    """Checks the frequency of words containing ñ."""
+    # Hyphenated words will usually count as one word using Spacy
+    words = es_instructions_util.tokenize_words(value)
+
+    # Filter words that contain 'ñ'
+    words_with_enie = [word for word in words if 'ñ' in word.lower()]
+
+    # Count the number of words with 'ñ'
+    num_words_with_enie = len(words_with_enie)
+
+    return num_words_with_enie == self._frequency
+
+
+class DieresisChecker(Instruction):
+  """Checks frequency of words with Spanish special character ü (dieresis)."""
+
+  def build_description(
+      self,
+      let_frequency = None,
+  ):
+    """Build the instruction description.
+
+    Args:
+      let_frequency: An integer that represents the number of words that
+        contains a dieresis.
+
+    Returns:
+      A string representing the instruction description.
+    """
+    self._frequency = let_frequency
+    if self._frequency is None:
+      self._frequency = random.randint(1, _LETTER_FREQUENCY)
+
+    self._description_pattern = (
+        "En tu respuesta, palabras con la letra ü deben aparecer "
+        "{frequency} veces."
+    )
+
+    return self._description_pattern.format(
+        frequency=self._frequency,
+    )
+
+  def get_instruction_args(self):
+    """Returns the keyword args of build description."""
+    return {
+        "let_frequency": self._frequency
+    }
+
+  def get_instruction_args_keys(self):
+    """Returns the args keys of `build_description`."""
+    return ["let_frequency"]
+
+  def check_following(self, value):
+    """Checks the frequency of words containing dieresis."""
+    # Hyphenated words will usually count as one word using Spacy
+    words = es_instructions_util.tokenize_words(value)
+
+    # Filter words that contain 'ü'
+    words_with_dieresis = [word for word in words if 'ü' in word.lower()]
+
+    # Count the number of words with 'ü'
+    num_words_with_dieresis = len(words_with_dieresis)
+
+    return num_words_with_dieresis == self._frequency
+
+
+class TildesChecker(Instruction):
+  """Checks frequency of words with tildes."""
+
+  def build_description(self, *, num_words = None,
+                        relation = None):
+    """Build the instruction description.
+
+    Args:
+      num_words: An integer specifying the number of words contained in the
+        response.
+      relation: A string in (`Como máximo`, `al menos`), defining the relational
+        operator for comparison.
+        Two relational comparisons are supported for now:
+        if 'less than', the actual number of words >= num_words;
+        if 'at least', the actual number of words <= num_words.
+
+    Returns:
+      A string representing the instruction description.
+    """
+
+    self._num_words = num_words
+    if self._num_words is None or self._num_words < 0:
+      self._num_words = random.randint(
+          _NUM_WORDS_LOWER_LIMIT, _NUM_WORDS_UPPER_LIMIT
+      )
+
     if relation is None:
       self._comparison_relation = random.choice(_COMPARISON_RELATION)
     elif relation not in _COMPARISON_RELATION:
@@ -1543,249 +1870,33 @@ class KanjiLimit(Instruction):
       self._comparison_relation = relation
 
     self._description_pattern = (
-      "{kanji_limit}文字{relation}漢字を用いて、答えてください。") 
-    return self._description_pattern.format(kanji_limit=self._kanji_limit, 
-                                            relation=self._comparison_relation)
-  
+        "Responde con {relation} {num_words} palabras con tilde.")
+
+    return self._description_pattern.format(
+        relation=self._comparison_relation,
+        num_words=self._num_words)
+
   def get_instruction_args(self):
     """Returns the keyward args of `build_description`."""
-    return {"kanji_limit": self._kanji_limit, "relation": self._comparison_relation}
+    return {"num_words": self._num_words,
+            "relation": self._comparison_relation}
 
   def get_instruction_args_keys(self):
     """Returns the args keys of `build_description`."""
-    return ["kanji_limit", "relation"]
+    return ["num_words", "relation"]
 
   def check_following(self, value):
-    """Checks if the number of kanji used follows the instruction.
+    """Checks if the response contains the expected number of words with tildes."""
+    accented_characters = "áéíóúÁÉÍÓÚ"
+    words = es_instructions_util.tokenize_words(value)
 
-    Args:
-      value: A string representing the response.
+    # Filter words that contain any of the accented characters
+    words_with_tildes = [word for word in words if any(char in accented_characters for char in word)]
 
-    Returns:
-      True if the number of kanji used follows the instruction, otherwise False.
-    """
-    kanji_count = len(re.findall(r'[\u4e00-\u9faf]', value))
+    # Hyphenated words will usually count as one word using Spacy
+    num_words_with_tildes = len(words_with_tildes)
+
     if self._comparison_relation == _COMPARISON_RELATION[0]:
-      return kanji_count < self._kanji_limit
+      return num_words_with_tildes >= self._num_words
     elif self._comparison_relation == _COMPARISON_RELATION[1]:
-      return kanji_count >= self._kanji_limit
-
-
-class NoHiragana(Instruction):
-  """Checks no Hiragana"""
-
-  def build_description(self):
-    """Build the instruction description."""
-    self._description_pattern = ("ひらがなを一文字も使わないで答えてください。")
-    return self._description_pattern
-
-  def get_instruction_args(self):
-    """Returns the keyward args of `build_description`."""
-    return {}
-
-  def get_instruction_args_keys(self):
-    """Returns the args keys of `build_description`."""
-    return []
-
-  def check_following(self, value):
-    """Checks if no hiragana is used."""
-    return not any('ぁ'<=char<='ゖ' for char in value)
-  
-
-class HiraganaOnly(Instruction):
-  """Checks the response written in Hiragana"""
-
-  def build_description(self):
-    """Build the instruction description."""
-    self._description_pattern = ("ひらがなだけを用いて答えてください。")
-    return self._description_pattern
-
-  def get_instruction_args(self):
-    """Returns the keyward args of `build_description`."""
-    return None
-
-  def get_instruction_args_keys(self):
-    """Returns the args keys of `build_description`."""
-    return []
-
-  def check_following(self, value):
-    """Checks if the response uses only hiragana."""
-    def is_hiragana(char):
-      return 'ぁ' <= char <= 'ん' or char == 'ー'
-
-    def is_ignorable(char):
-      return not unicodedata.category(char).startswith('L')
-
-    return all(is_hiragana(char) or is_ignorable(char) for char in value)
-
-
-class NoKatakana(Instruction):
-  """Checks no Katakana"""
-
-  def build_description(self):
-    """Build the instruction description."""
-    self._description_pattern = ("カタカナを一文字も使わないで答えてください。")
-    return self._description_pattern
-
-  def get_instruction_args(self):
-    """Returns the keyward args of `build_description`."""
-    return {}
-
-  def get_instruction_args_keys(self):
-    """Returns the args keys of `build_description`."""
-    return []
-
-  def check_following(self, value):
-    """Checks if no katakana is used."""
-    return not any(('ァ'<=char<='ヺ' or 'ｦ'<=char<='ﾟ') for char in value)
-
-
-class KatakanaOnly(Instruction):
-  """Checks the response written in Katakana"""
-
-  def build_description(self):
-    """Build the instruction description."""
-    self._description_pattern = ("カタカナだけを用いて答えてください。")
-    return self._description_pattern
-
-  def get_instruction_args(self):
-    """Returns the keyward args of `build_description`."""
-    return None
-
-  def get_instruction_args_keys(self):
-    """Returns the args keys of `build_description`."""
-    return []
-
-  def check_following(self, value):
-    """Checks if the response uses only katakana."""
-    def is_katakana(char):
-      return ('ァ' <= char <= 'ン' or
-              char == 'ー' or
-              char == '・' or
-              'ｦ' <= char <= 'ﾟ')
-
-    def is_ignorable(char):
-      return not unicodedata.category(char).startswith('L')
-
-    return all(is_katakana(char) or is_ignorable(char) for char in value)
-
-
-class SentenceEndingUnification(Instruction):
-  """Check all the sentence endings"""
-
-  def build_description(self, *, ending=None):
-    """Build the instruction description.
-      
-    Args:
-      ending: A string used at the end of all sentences.
-    
-    Returns:
-      A string representing the instruction description.
-    """
-    self._ending = ending
-    if self._ending is None:
-        self._ending = random.choice(_ENDING_LETTERS)
-    self._description_pattern = (
-      "応答において、全ての文末が「{ending}」で統一された自然な文章にしてください。")
-    return self._description_pattern.format(ending=self._ending)
-  
-  def get_instruction_args(self):
-    """Returns the keyward args of `build_description`."""
-    return {"ending": self._ending}
-  
-  def get_instruction_args_keys(self):
-    """Returns the args keys of `build_description`."""
-    return ["ending"]
-
-  def check_following(self, value):
-    """Checks if all sentence endings are in the specified form.
-
-    Args:
-      value: A string representing the response.
-
-    Returns:
-      True if all the sentence endings follow the instruction; otherwise False.
-    """
-    quote_pattern_1 = re.compile(r'「.*?」')
-    quote_pattern_2 = re.compile(r'『.*?』')
-    value = re.sub(quote_pattern_1, '', value)
-    value = re.sub(quote_pattern_2, '', value)
-
-    sentences = re.split(r'[。！？]', value)
-    for sentence in sentences:
-      if sentence and not sentence.endswith(self._ending):
-        return False
-    return True
-  
-
-class NominalEndingChecker(Instruction):
-  """Check the nominal endings in the response"""
-
-  def build_description(self, *, count=None):
-    """Build the instruction description.
-
-    Args:
-      count: An integer specifying the exact number of nominal endings
-        that is required to appear in the response.
-    
-    Returns:
-      A string representing the instruction description.
-    """
-    self._count = count 
-    if self._count is None or self._count < 0:
-      self._count = random.randint(1, _NOMINAL_ENDING_COUNT)
-    self._description_pattern = ("応答の中で体言止めを{count}回は使用してください。")
-    return self._description_pattern.format(count = self._count)
-
-  def get_instruction_args(self):
-    """Returns the keyward args of `build_description`."""
-    return {"count": self._count}
-  
-  def get_instruction_args_keys(self):
-    """Returns the args keys of `build_description`."""
-    return ["count"]
-  
-  def check_following(self, value):
-    """Checks if the number of nominal endings meets the requirement.
-
-    Args:
-      value: A string representing the response.
-
-    Returns:
-      True if the actual number of nominal endings meets the minimum requirement; otherwise False.
-    """
-    quote_pattern_1 = re.compile(r'「.*?」')
-    quote_pattern_2 = re.compile(r'『.*?』')
-    value = re.sub(quote_pattern_1, '', value)
-    value = re.sub(quote_pattern_2, '', value)
-
-    tokens = ja_instructions_util.tokenizing_texts(value)
-    tokens = list(tokens)
-
-    noun_count = 0
-    for i in range(1, len(tokens)):
-      if tokens[i].surface in '。！？' and tokens[i-1].part_of_speech.startswith('名詞'):
-        noun_count += 1
-
-    return noun_count >= self._count
-
-
-class KanjiNumberNotationChecker(Instruction):
-  """Check all numbers written in kanji."""
-
-  def build_description(self):
-    """Build the instruction description."""
-    self._description_pattern = "数字を全て漢数字で表記してください。"
-    return self._description_pattern
-
-  def get_instruction_args(self):
-    """Returns the keyward args of `build_description`."""
-    return None
-
-  def get_instruction_args_keys(self):
-    """Returns the args keys of `build_description`."""
-    return []
-  
-  def check_following(self, value):
-    """Checks if all numbers are written in kanji."""
-    return not re.search(r'\d', value)
+      return num_words_with_tildes <= self._num_words

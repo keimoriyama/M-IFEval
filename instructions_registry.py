@@ -16,6 +16,7 @@
 """Registry of all instructions."""
 from instructions import en_instructions
 from instructions import ja_instructions
+from instructions import es_instructions
 from instructions import fr_instructions
 
 _KEYWORD = "keywords:"
@@ -127,6 +128,42 @@ JA_INSTRUCTION_DICT = {
     _STARTEND + "quotation": ja_instructions.QuotationChecker,
 }
 
+ES_INSTRUCTION_DICT = {
+    _KEYWORD + "existence": es_instructions.KeywordChecker,
+    _KEYWORD + "frequency": es_instructions.KeywordFrequencyChecker,
+    _KEYWORD + "forbidden_words": es_instructions.ForbiddenWords,
+    _KEYWORD + "letter_frequency": es_instructions.LetterFrequencyChecker,
+    _LANGUAGE + "response_language": es_instructions.ResponseLanguageChecker,
+    _LENGTH + "number_words": es_instructions.NumberOfWords,
+    _LENGTH + "number_sentences": es_instructions.NumberOfSentences,
+    _LENGTH + "number_paragraphs": es_instructions.ParagraphChecker,
+    _LENGTH + "nth_paragraph_first_word": es_instructions.ParagraphFirstWordCheck,
+    _CONTENT + "number_placeholders": es_instructions.PlaceholderChecker,
+    _CONTENT + "postscript": es_instructions.PostscriptChecker,
+    _FORMAT + "number_bullet_lists": es_instructions.BulletListChecker,
+    _FORMAT + "constrained_response": es_instructions.ConstrainedResponseChecker,
+    _FORMAT + "number_highlighted_sections": (
+        es_instructions.HighlightSectionChecker),
+    _FORMAT + "multiple_sections": es_instructions.SectionChecker,
+    _FORMAT + "json_format": es_instructions.JsonFormat,
+    _FORMAT + "title": es_instructions.TitleChecker,
+    _COMBINATION + "two_responses": es_instructions.TwoResponsesChecker,
+    _COMBINATION + "repeat_prompt": es_instructions.RepeatPromptThenAnswer,
+    _PUNCTUATION + "no_comma": es_instructions.CommaChecker,
+    _PUNCTUATION + "question_marks": es_instructions.QuestionMarkChecker,
+    _PUNCTUATION + "exclamation_marks": es_instructions.ExclamationMarkChecker,
+    _STARTEND + "end_checker": es_instructions.EndChecker,
+    _STARTEND + "quotation": es_instructions.QuotationChecker,
+    _CHANGE_CASES
+    + "capital_word_frequency": es_instructions.CapitalWordFrequencyChecker,
+    _CHANGE_CASES
+    + "spanish_capital": es_instructions.CapitalLettersSpanishChecker,
+    _CHANGE_CASES
+    + "spanish_lowercase": es_instructions.LowercaseLettersSpanishChecker,
+    _SPECIAL_CHARACTER + "enie": es_instructions.EnieChecker,
+    _SPECIAL_CHARACTER + "tildes": es_instructions.TildesChecker,
+    _SPECIAL_CHARACTER + "dieresis": es_instructions.DieresisChecker,
+}
 
 FR_INSTRUCTION_DICT = {
     _KEYWORD + "existence": fr_instructions.KeywordChecker,
@@ -179,3 +216,4 @@ INSTRUCTION_DICT = {}
 INSTRUCTION_DICT.update({"en:" + k: v for k, v in EN_INSTRUCTION_DICT.items()})
 INSTRUCTION_DICT.update({"ja:" + k: v for k, v in JA_INSTRUCTION_DICT.items()})
 INSTRUCTION_DICT.update({"fr:" + k: v for k, v in FR_INSTRUCTION_DICT.items()})
+INSTRUCTION_DICT.update({"es:" + k: v for k, v in ES_INSTRUCTION_DICT.items()})
