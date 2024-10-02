@@ -7,3 +7,4 @@ immutabledict
 spacy
 janome
 ja_sentence_segmenter
+datasets
