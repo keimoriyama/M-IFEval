@@ -39,7 +39,7 @@ class AnthropicResponseGenerator(ResponseGenerator):
                         ]
                     }
                 ]
-            ).message.content[0].text for input_text in tqdm(input_texts)
+            ).content[0].text for input_text in tqdm(input_texts)
         ]
 
 ######## OpenAI ########
