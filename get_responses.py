@@ -166,10 +166,10 @@ MODEL_CLASS_DICT = {
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", type=str, required=True)
+    parser.add_argument("--model_name", type=str, required=True)
     args = parser.parse_args()
 
-    model_name = args.model
+    model_name = args.model_name
 
     assert model_name in SUPPORTED_MODELS, f"Model {model_name} not supported"
 
@@ -182,6 +182,6 @@ if __name__ == "__main__":
         print(path + " - " + model_name)
         ds = load_dataset("json", data_files={"train": path}, split="train")
         ds = ds.add_column("response", response_generator.get_response(ds["prompt"]))
-        ds.to_json(
-            path[:-10] + "response_data_" + model_name + ".jsonl"
+        ds.select_columns(["prompt", "response"]).to_json(
+            path[:-10] + "response_data_" + model_name.replace("/", "__") + ".jsonl"
         )
