@@ -39,7 +39,7 @@ class AnthropicResponseGenerator(ResponseGenerator):
                         ]
                     }
                 ]
-            ).message.content[0].text for input_text in tqdm(input_texts)
+            ).content[0].text for input_text in tqdm(input_texts)
         ]
 
 ######## OpenAI ########
@@ -142,6 +142,7 @@ SUPPORTED_MODELS = {
     'claude-3-5-sonnet-20240620': 'claude',
     'claude-3-opus-20240229': 'claude',
     'gemini-1.5-pro-002': 'gemini',
+    'gemini-1.5-flash-002': 'gemini',
     'CohereForAI/c4ai-command-r-plus-4bit': 'vllm',
     'CohereForAI/c4ai-command-r-v01-4bit': 'vllm',
     'CohereForAI/aya-23-8B': 'vllm',
