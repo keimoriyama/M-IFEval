@@ -51,9 +51,9 @@ class OpenaiResponseGenerator(ResponseGenerator):
         self.openai_client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
         self.model_name = model_name
     
-    def get_response(self, input_texts):
-        return [
-            self.openai_client.chat.completions.create(
+    def get_single_response(self, input_text):
+        try:
+            return self.openai_client.chat.completions.create(
                 model=self.model_name,
                 messages=[
                     {
@@ -66,13 +66,20 @@ class OpenaiResponseGenerator(ResponseGenerator):
                     ]
                     }
                 ],
-                temperature=0,
-                max_tokens=2048,
-                # top_p=1,
-                frequency_penalty=0,
-                presence_penalty=0,
-                response_format={"type": "text"}
-            ).choices[0].message.content for input_text in tqdm(input_texts)
+                # temperature=0,
+                # # max_tokens=None if "o1" in self.model_name else 2048,
+                # # top_p=1,
+                # frequency_penalty=0,
+                # presence_penalty=0,
+                # response_format={"type": "text"}
+            ).choices[0].message.content
+        except Exception as e:
+            print(e)
+            return None
+    
+    def get_response(self, input_texts):
+        return [
+            self.get_single_response(input_text) for input_text in tqdm(input_texts)
         ]
 
 ######## VertexAI ########
