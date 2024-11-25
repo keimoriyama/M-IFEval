@@ -24,6 +24,7 @@ from typing import Dict, Optional, Sequence, Union
 from absl import logging
 import langdetect
 import unicodedata
+import spacy
 
 from instruction_utils import es_instructions_util
 
@@ -89,6 +90,7 @@ _ALL__WORD_FREQUENCY = 20
 _NUM_WORDS_LOWER_LIMIT = 1
 _NUM_WORDS_UPPER_LIMIT = 500
 
+multilingual_nlp = spacy.load("xx_sent_ud_sm")
 
 class Instruction:
   """An instruction template."""
@@ -239,11 +241,8 @@ class NumberOfSentences(Instruction):
 
     if detected_lang == "es":
       num_sentences = es_instructions_util.count_sentences(cleaned_text)
-    
     else:
-      import spacy
-      nlp = spacy.load("xx_sent_ud_sm")
-      tokenized_text = nlp(cleaned_text) 
+      tokenized_text = multilingual_nlp(cleaned_text) 
       num_sentences = len(list(tokenized_text.sents))
       
     if self._comparison_relation == _COMPARISON_RELATION[0]:

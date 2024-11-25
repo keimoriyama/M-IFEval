@@ -74,6 +74,7 @@ _WEBSITES = "[.](com|net|org|io|gov|edu|me|es|mx|ar|cl|co|pe|uy|ve|bo|do|gt|hn|p
 _DIGITS = "([0-9])"
 _MULTIPLE_DOTS = r"\.{2,}"
 
+nlp = spacy.load("es_core_news_sm")
 
 def split_into_sentences(text):
   """Split the text into sentences.
@@ -130,7 +131,6 @@ def split_into_sentences(text):
 def count_words(text):
   """Counts the number of words, respecting Spanish special characters and features with spacy."""
   # Load the Spanish tokenizer model from spacy
-  nlp = spacy.load("es_core_news_sm")
   tokenized_text = nlp(text)  # Process the text with the Spanish tokenizer
   num_words = len([token.text for token in tokenized_text if not token.is_punct])  # Count non-punctuation tokens
   return num_words
@@ -138,7 +138,6 @@ def count_words(text):
 def tokenize_words(text):
   """Returns a list of words from the text, respecting Spanish special characters and features with spaCy."""
   # Load the Spanish tokenizer model from spaCy
-  nlp = spacy.load("es_core_news_sm")
   tokenized_text = nlp(text)  # Process the text with the Spanish tokenizer
   # Extract non-punctuation tokens
   words = [token.text for token in tokenized_text if not token.is_punct]
@@ -147,7 +146,6 @@ def tokenize_words(text):
 def count_sentences(text):
   """Count the number of sentences."""
   # Load the Spanish tokenizer model from spacy
-  nlp = spacy.load("es_core_news_sm")
   tokenized_text = nlp(text)  # Process the text with the Spanish tokenizer
   num_sentences = len(list(tokenized_text.sents))  # Count the number of sentences
   return num_sentences

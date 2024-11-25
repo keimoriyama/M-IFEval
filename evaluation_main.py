@@ -111,7 +111,7 @@ def test_instruction_following_strict(
     if args and "prompt" in args:
       instruction.build_description(prompt=inp.prompt)
 
-    if response.strip() and instruction.check_following(response):
+    if isinstance(response, str) and response.strip() and instruction.check_following(response):
       is_following_list.append(True)
     else:
       is_following_list.append(False)
@@ -131,16 +131,17 @@ def test_instruction_following_loose(
 ):
   """Tests response for an upper bound for following instructions."""
   response = prompt_to_response[inp.prompt]
-  r = response.split("\n")
-  response_remove_first = "\n".join(r[1:]).strip()
-  response_remove_last = "\n".join(r[:-1]).strip()
-  response_remove_both = "\n".join(r[1:-1]).strip()
-  revised_response = response.replace("*", "")
-  revised_response_quotation = response.replace('\"', '')
-  revised_response_remove_first = response_remove_first.replace("*", "")
-  revised_response_remove_last = response_remove_last.replace("*", "")
-  revised_response_remove_both = response_remove_both.replace("*", "")
-  all_responses = [
+  if isinstance(response, str):
+    r = response.split("\n")
+    response_remove_first = "\n".join(r[1:]).strip()
+    response_remove_last = "\n".join(r[:-1]).strip()
+    response_remove_both = "\n".join(r[1:-1]).strip()
+    revised_response = response.replace("*", "")
+    revised_response_quotation = response.replace('\"', '')
+    revised_response_remove_first = response_remove_first.replace("*", "")
+    revised_response_remove_last = response_remove_last.replace("*", "")
+    revised_response_remove_both = response_remove_both.replace("*", "")
+    all_responses = [
       response,
       revised_response,
       response_remove_first,
@@ -149,7 +150,10 @@ def test_instruction_following_loose(
       revised_response_remove_first,
       revised_response_remove_last,
       revised_response_remove_both,
-  ]
+    ]
+  else:
+    all_responses=[]
+    
   instruction_list = inp.instruction_id_list
   is_following_list = []
 
