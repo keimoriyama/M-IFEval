@@ -24,10 +24,10 @@ instruction_following_eval. For example:
 # {"prompt": "Write a 300+ word summary ...", "response": "PUT YOUR MODEL RESPONSE HERE"}
 # {"prompt": "I am planning a trip to ...", "response": "PUT YOUR MODEL RESPONSE HERE"}
 # ...
-python3 -m instruction_following_eval.evaluation_main \
-  --input_data=./instruction_following_eval/data/input_data.jsonl \
-  --input_response_data=./instruction_following_eval/data/input_response_data_gpt4_20231107_145030.jsonl \
-  --output_dir=./instruction_following_eval/data/
+python3 -m evaluation_main \
+  --input_data=./data/input_data.jsonl \
+  --input_response_data=./data/input_response_data_gpt4_20231107_145030.jsonl \
+  --output_dir=./evaluation/
 ```
 
 ## Reference
