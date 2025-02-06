@@ -78,6 +78,12 @@ def read_prompt_list(input_jsonl_filename):
 def write_outputs(output_jsonl_filename, outputs):
   """Writes outputs to jsonl."""
   assert outputs
+  
+  # Ensure the entire directory path exists
+  directory = os.path.dirname(output_jsonl_filename)
+  if directory and not os.path.exists(directory):
+      os.makedirs(directory, exist_ok=True)
+  
   with open(output_jsonl_filename, "w") as f:
     for o in outputs:
       f.write(
