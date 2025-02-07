@@ -1,39 +1,178 @@
-# IFEval: Instruction Following Eval
+# M-IFEval: Multilingual Instruction Following Evaluation
+<a href="https://github.com/lightblue-tech/M-IFEval/fork">
+        <img src="https://img.shields.io/badge/PRs-Welcome-purple?color=%23b304d6" height="20"/>
+    </a>
+<a href="https://colab.research.google.com/github/lightblue-tech/M-IFEval/blob/main/colab_mifeval_run.ipynb">
+    <img src="https://img.shields.io/badge/Colab-Demo-gray?logo=googlecolab&color=%23F9AB00" height="20"/>
+</a> 
+<a href="TO DO: ADD ARXIV LINK">
+        <img src="https://img.shields.io/badge/ArXiv-Preprint-gray?logo=arxiv&labelColor=%23B31B1B" height="20"/>
+    </a>    
 
-This is not an officially supported Google product.
 
-This repository contains source code and data for
-[Instruction Following Evaluation for Large Language Models](arxiv.org/abs/2311.07911)
+> This repository contains source code and data for [M-IFEval: Multilingual
+Instruction-Following Evaluation](TO DO: ADD ARXIV LINK)
 
-## Dependencies
 
-Please make sure that all required python packages are installed via:
+Large language models (LLMs) are increasingly used in real-world applications that require understanding and executing user instructions accurately. Evaluating instruction following is crucial to ensure these models perform reliably across different tasks and languages.
 
+Building upon the [Instruction Following Evaluation for Large Language Models](https://arxiv.org/abs/2311.07911) benchmark, which first underscored the importance of instruction-following evaluation,  we introduce **M-IFEval**,  a benchmark designed to extend this evaluation to multiple languages.
+
+M-IFEval currently supports **French**, **Japanese**, and **Spanish**, incorporating both general and language-specific instructions to provide a more comprehensive assessment of multilingual instruction adherence.
+
+## Table of Contents
+- [**🏆 Leader board**](#🏆-leader-board)
+- [**⚙️ How to run**](#⚙️-how-to-run)
+  - [🌐 With Colab](#with-colab-🌐)
+  - [🖥️ Locally](#locally-🖥️)
+    - [Setup Instructions](#setup-instructions)
+    - [Evaluate YOUR model](#evaluate-your-model)
+- [**Contributions 🤝**](#contributions-🤝)
+- [**📚 References**](#📚-reference)
+- [**📜 License**](#📜-license)
+
+## 🏆 Leader board 
+The table below presents the average scores across all instructions for each language, sorted in ascending order by the mean scores across the languages supported by the M-IFEval benchmark (i.e., Spanish, French, and Japanese).
+
+| Model Name            | English* | Spanish | French | Japanese | Average (ES/FR/JA) |
+|:-----------------------|-----:|-----:|-----:|-----:|--------------:|
+| o1                     | 85.9 | 92.7 | 91.3 | 75.7 |          86.6 |
+| Opus                   | 87.3 | 90.5 | 87   | 75.7 |          84.4 |
+| Sonnet                 | 88.1 | 87.6 | 88.1 | 77   |          84.2 |
+| o1 Mini                | 83.9 | 92   | 88.4 | 69.5 |          83.3 |
+| GPT4o                  | 88.6 | 89.8 | 87.8 | 70.4 |          82.7 |
+| GPT4o Mini             | 86   | 85.4 | 85.5 | 65.9 |          78.9 |
+| Qwen 2.5 32B I. 4-bit  | 86   | 82.5 | 81.7 | 65.9 |          76.7 |
+| Qwen 2.5 14B I. 4-bit  | 84.2 | 83.2 | 82.6 | 57.5 |          74.4 |
+| Haiku                  | 77.3 | 78.8 | 78.3 | 61.9 |          73   |
+| Qwen 2.5 7B I. 4-bit   | 80.6 | 78.1 | 76.8 | 50.9 |          68.6 |
+| Llama 3.1 8B I.        | 80.1 | 80.3 | 71.3 | 39.8 |          63.8 |
+| Qwen 2.5 3B I. 4-bit   | 67.9 | 68.6 | 65.8 | 45.1 |          59.8 |
+| Mistral 7B I.          | 59   | 62.8 | 61.7 | 29.2 |          51.2 |
+| Aya 23 8B              | 50.6 | 59.9 | 57.4 | 35   |          50.7 |
+| Qwen 2.5 1.5B I. 4-bit | 49.5 | 59.9 | 49.3 | 28.3 |          45.8 |
+| DeepSeek LLM 7B Chat   | 48.9 | 48.2 | 45.8 | 25.2 |          39.7 |
+| Qwen 2.5 0.5B I. 4-bit | 34.4 | 36.5 | 33.9 | 19.9 |          30.1 |
+
+\(*) The values reported for English (EN) correspond to the evaluation on the original IFEval dataset.
+
+
+## ⚙️ How to run
+
+### With Colab 🌐
+
+We provide a Jupyter Notebook designed to run seamlessly in Google Colab. This notebook guides you through:
+
+- Generating responses from models supported by Hugging Face (HF), OpenAI, and Anthropic.
+- Evaluating a given model based on its generated responses.
+- Displaying basic visualizations of evaluation results.
+
+Click the badge to open the notebook in Colab:
+<a href="https://colab.research.google.com/github/lightblue-tech/M-IFEval/blob/main/colab_mifeval_run.ipynb">
+    <img src="https://img.shields.io/badge/Colab-Notebook-gray?logo=googlecolab&color=%23F9AB00" height="20" style="vertical-align: -5px;"/>
+</a> 
+
+<hr style="border: 0; height: 1px; box-shadow: 0 0 0 0.01px #ddd; margin-top: 0;"/>
+
+### Locally 🖥️
+
+If you prefer to run the evaluation directly on your machine, whether for computational reasons or other preferences, follow these steps:
+
+#### Setup Instructions
+<hr style="border: 0; height: 1px; box-shadow: 0 0 0 0.01px #ddd; margin-top: 0;"/>
+
+##### Clone the Repository  
+
+First, clone the repository:  
+
+```bash
+git clone -b main https://github.com/lightblue-tech/M-IFEval.git
 ```
+
+##### Install Dependencies  
+
+Ensure all required Python packages are installed:  
+
+```bash
 pip3 install -r requirements.txt
 ```
 
-## How to run
+#### Evaluate Your Model  
+<hr style="border: 0; height: 1px; box-shadow: 0 0 0 0.01px #ddd; margin-top: 0;"/>
 
-You need to create a jsonl file with two entries: prompt and response.
-Then, call `evaluation_main` from the parent folder of
-instruction_following_eval. For example:
+##### Prepare Responses File  
+
+To evaluate your model, you need to create a JSONL file containing the instruction prompts and their corresponding responses.  
+
+You can either manually create a file with the following structure:  
+
+```json
+{"prompt": "Write a 300+ word summary ...", "response": "PUT YOUR MODEL RESPONSE HERE"}
+{"prompt": "I am planning a trip to ...", "response": "PUT YOUR MODEL RESPONSE HERE"}
+```
+
+Or, you can use `get_responses.py` to automatically generate the JSONL file in the required format:
+
+- **For Hugging Face, OpenAI, or Anthropic models**:  
+
+  To add support for a new model, update the `SUPPORTED_MODELS` dictionary in `get_responses.py` by specifying the model name and its corresponding inference method:  
+
+  ```python
+  SUPPORTED_MODELS = {
+      "openai_model_name_or_version": "openai",
+      "anthropic_model_name_or_version": "anthropic",
+      "hf_model_name_or_path": "vllm"
+  }
+  ```  
+
+  Replace `"openai_model_name_or_version"`, `"anthropic_model_name_or_version"`, or `"hf_model_name_or_path"` with the actual model identifiers.  
+
+  **Note:** The dictionary values (`"openai"`, `"anthropic"`, `"vllm"`) must remain unchanged to ensure the correct inference method is used.  
+
+  Once the model is added, generate responses by running:  
+
+  ```bash
+  python3 -m get_responses.py --model_name {model_name}
+  ```  
+
+  Replace `{model_name}` with the exact model identifier you added.
+
+- **For *(yet)* unsupported providers  requiring API keys**:  
+
+  Implement a subclass of `ResponseGenerator` in `get_responses.py` to handle API calls for your provider.  
+
+##### Run the Evaluation  
+
+Once you have the JSONL file ready, run the evaluation script:  
 
 ```bash
-# Content of `--input_response_data` should be like:
-# {"prompt": "Write a 300+ word summary ...", "response": "PUT YOUR MODEL RESPONSE HERE"}
-# {"prompt": "I am planning a trip to ...", "response": "PUT YOUR MODEL RESPONSE HERE"}
-# ...
 python3 -m evaluation_main \
-  --input_data=./data/input_data.jsonl \
-  --input_response_data=./data/input_response_data_gpt4_20231107_145030.jsonl \
+  --input_data=./data/lang_input_data.jsonl \
+  --input_response_data=./data/input_response_data_model_name.jsonl \
   --output_dir=./evaluation/
 ```
 
-## Reference
+This will generate evaluation results in the specified output directory.
+
+## Contributions 🤝
+
+We welcome contributions to:
+- Support the evaluation of other models
+- Add models to the leaderboard
+- Expand the benchmark to additional languages
+- Improve evaluation quality (data and instructions) for currently supported languages
+
+If you have any feedback, concerns, or inquiries about the benchmark, feel free to [open an issue](https://github.com/lightblue-tech/M-IFEval/issues/new).
+
+## 📚 Reference 
 
 If you use our work, please consider citing our preprint:
 
+```
+TO DO: ADD PREPRINT
+```
+
+As well, as the original IFEval paper's preprint:
 ```
 @article{zhou2023instruction,
   title={Instruction-Following Evaluation for Large Language Models},
@@ -43,68 +182,9 @@ If you use our work, please consider citing our preprint:
 }
 ```
 
-## 日本語データセットについて
+## 📜 License 
 
-日本語特有のinstructionsは次の通りです。
-| Instruction Group | Instruction | Description|
-| --- | --- | --- |
-| Length Constraints | Number Letters | {N}文字以上 / 未満で答えてください。 |
-| Punctuation | No Periods | 応答全体で句点を使用しないでください。 |
-| Letters | Furigana | 全ての漢字にふりがなをつけてください。ふりがなは全角の括弧（）の中に書いてください。 |
-| Letters | Kanji | {N}文字以上 / 未満漢字を用いて答えてください。 |
-| Letters | No Hiragana | ひらがなを一文字も使わないで答えてください。 |
-| Letters | Hiragana Only | ひらがなだけを用いて答えてください。 |
-| Letters | No Katakana | カタカナを一文字も使わないで答えてください。 |
-| Letters | Katakana Only | カタカナだけを用いて答えてください。 |
-| Letters | Unified Sentence Endings | 応答において、全ての文末が「{ending}」で統一された自然な文章にしてください。 |
-| Letters | Kansuuji | 数字を全て漢数字で表記してください。 |
-| Detectable Format | Nominal Endings | 応答の中で体言止めを{N}回は使用してください。 |
-| Detectable Format | Numbered Lists | 応答はちょうど {N} 個の番号付きリストで構成してください。以下のような番号付きリストの形を参考にしてください: 1. 一つめの内容 ... |
+This project is licensed under the Apache License, Version 2.0.
+See the LICENSE file for [details](https://github.com/lightblue-tech/M-IFEval/blob/main/LICENSE.txt).
 
-日本語のプロンプトは3つのステップで作成されました。
-まず、Few-shotプロンプティングを用いて、この課題に適切なプロンプトを書くように教育しました。
-次に、なるべくランダムなテーマとプロンプトに組み込みたい条件文を指定することで、条件に合ったプロンプトを10個書かせました。
-最後に、それらから適切なプロンプトを手動で書き換えることで、プロンプト文をコードに書き加えました。
-
-## French Dataset
-
-The French-specific instructions are as follows:
-
-| Instruction Group | Instruction | Description| Translation |
-| --- | --- | --- | --- |
-| Special Character | Forbidden Character (Ethel or Cedilla) | N'incluez pas le caractère {forbidden_char} dans votre réponse. | Do not include the character {forbidden_char} in your answer.
-| Special Character | No Accents | Ne faites pas usage d'accents dans votre réponse. | Do not use accents in your answer. |
-| Special Character | Add Accents | Réécris ce texte en ajoutant les accents. | Rewrite this text by adding the accents. | 
-| Detectable Content | Informal Address | Parlez directement à votre interlocuteur dans votre réponse et utilisez le tutoiement. | Speak directly to your conversation partner in your response and address them informally. |
-| Detectable Content | No Digits | N'utilisez pas de chiffres arabes dans votre réponse. | Do not use arabic numerals in your response. |
-
-
-**Main changes in generic instructions:**
-- `TitleChecker`: 
-
-  - Original: << title >> 
-
-  - French: ##title##
-
-  Motivation: <<>> is too close to French quotation marks «», and is not really used in French.
-
-- `QuotationChecker`: 
-  
-  - original: checks for "texte"
-  
-  - french: checks for «texte» or "texte" or 'texte'
-  
-  Motivation: all above quotations would be valid in French
-
-  ## Spanish Dataset
-
-  The Spanish specific instructions are:
-
-  | Instruction Group | Instruction | Description| Translation |
-  | --- | --- | --- | --- |
-  Special Characters | Letter Frequency (ñ) | En tu respuesta, palabras con la letra "ñ" deben aparecer {N} veces. | In your response, words with the letter "ñ" should appear {N} times. |
-  Special Characters | Num_words: add words with tildes | Responde con al menos/como máximo {N} palabras con tilde. | Answer with at least / at most {N} words with tildes. |
-  Special Characters | Letter Frequency (ü) | En tu respuesta, palabras con la letra "ü" deben aparecer {N} veces. | In your response, words with the letter "ü" should appear {N} times. |
-  Punctuation | Interrogation marks | Tu respuesta debe incluir al menos una pregunta. | Your response must express at least one question. |
-  Punctuation | Exclamation marks | Tu respuesta debe incluir al menos una exclamación. | Your response must express at least one exclamation. |
-
+This project includes code from [Instruction Following Evaluation for Large Language Models](https://github.com/google-research/google-research/tree/master/instruction_following_eval) licensed under Apache 2.0.
