@@ -72,7 +72,6 @@ Click the badge to open the notebook in Colab:
     <img src="https://img.shields.io/badge/Colab-Notebook-gray?logo=googlecolab&color=%23F9AB00" height="20" style="vertical-align: -5px;"/>
 </a> 
 
-<hr style="border: 0; height: 1px; box-shadow: 0 0 0 0.01px #ddd; margin-top: 0;"/>
 
 ### Locally 🖥️
 
@@ -89,12 +88,24 @@ First, clone the repository:
 git clone -b main https://github.com/lightblue-tech/M-IFEval.git
 ```
 
+Move into the cloned directory:
+```bash
+cd M-IFEval 
+```
+
 ##### Install Dependencies  
 
-Ensure all required Python packages are installed:  
+Ensure all required Python packages are installed in your working environment:  
 
 ```bash
-pip3 install -r requirements.txt
+pip3 install --user -r requirements.txt
+```
+
+Download Spacy models:
+
+```bash
+python -m spacy download es_core_news_sm --quiet
+python -m spacy download xx_sent_ud_sm --quiet
 ```
 
 #### Evaluate Your Model  
@@ -130,12 +141,28 @@ Or, you can use `get_responses.py` to automatically generate the JSONL file in t
   **Note:** The dictionary values (`"openai"`, `"anthropic"`, `"vllm"`) must remain unchanged to ensure the correct inference method is used.  
 
   Once the model is added, generate responses by running:  
-
-  ```bash
-  python3 -m get_responses.py --model_name {model_name}
-  ```  
+  
+    ```bash
+    python3 -m get_responses.py --model_name {model_name}
+    ```  
 
   Replace `{model_name}` with the exact model identifier you added.
+
+  > [!NOTE] Before running the scripts, make sure to set your API keys and Hugging Face token as environment variables. For OpenAI or Anthropic, set the API key like this:  
+  >
+  >```bash
+  >export OPENAI_API_KEY="your_openai_api_key_here"
+  >export ANTHROPIC_API_KEY="your_anthropic_api_key_here"
+  >```
+  >
+  >For Hugging Face, set your token with:  
+  >
+  >```bash
+  >export HUGGINGFACE_TOKEN="your_huggingface_token_here"
+  >huggingface-cli login --token $HUGGINGFACE_TOKEN
+  >```
+  >
+  >Replace the placeholders with your actual keys. This will >ensure the scripts can access the necessary services.
 
 - **For *(yet)* unsupported providers  requiring API keys**:  
 
@@ -147,12 +174,15 @@ Once you have the JSONL file ready, run the evaluation script:
 
 ```bash
 python3 -m evaluation_main \
-  --input_data=./data/lang_input_data.jsonl \
+  --input_data=./data/{lang}_input_data.jsonl \
   --input_response_data=./data/input_response_data_model_name.jsonl \
   --output_dir=./evaluation/
 ```
+- Replace `{lang}` with the language tag corresponding to the language you wish to evaluate (e.g., `en` for English, `fr` for French).
+- Update `input_response_data` with the path to your model's response JSONL file.
 
-This will generate evaluation results in the specified output directory.
+This command will generate evaluation results in the specified output directory.
+
 
 ## Contributions 🤝
 
