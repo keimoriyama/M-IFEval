@@ -148,7 +148,8 @@ Or, you can use `get_responses.py` to automatically generate the JSONL file in t
 
   Replace `{model_name}` with the exact model identifier you added.
 
-  > [!NOTE] Before running the scripts, make sure to set your API keys and Hugging Face token as environment variables. For OpenAI or Anthropic, set the API key like this:  
+  > [!NOTE] 
+  > Before running the scripts, make sure to set your API keys and Hugging Face token as environment variables. For OpenAI or Anthropic, set the API key like this:  
   >
   >```bash
   >export OPENAI_API_KEY="your_openai_api_key_here"
