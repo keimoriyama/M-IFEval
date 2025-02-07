@@ -1,3 +1,18 @@
+# coding=utf-8
+# Copyright 2025 The Lightblue Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import os
 import argparse
 from glob import glob
@@ -84,37 +99,38 @@ class OpenaiResponseGenerator(ResponseGenerator):
 
 ######## VertexAI ########
 
-class VertexResponseGenerator(ResponseGenerator):
-    def __init__(self, model_name):
-        self.model_name = model_name
+# TO DO: Add Support for VertexAI
+# class VertexResponseGenerator(ResponseGenerator):
+#     def __init__(self, model_name):
+#         self.model_name = model_name
     
-    def get_response(self, input_texts):
-        import vertexai
-        from vertexai.generative_models import GenerativeModel
+#     def get_response(self, input_texts):
+#         import vertexai
+#         from vertexai.generative_models import GenerativeModel
 
-        generation_config = {
-            "max_output_tokens": 2048,
-            "temperature": 0,
-        }
+#         generation_config = {
+#             "max_output_tokens": 2048,
+#             "temperature": 0,
+#         }
 
-        safety_settings = [
-        ]
+#         safety_settings = [
+#         ]
 
-        vertexai.init(project="dev-llab", location="asia-south1")
-        model = GenerativeModel(
-            self.model_name,
-        )
+#         vertexai.init(project="dev-llab", location="asia-south1")
+#         model = GenerativeModel(
+#             self.model_name,
+#         )
 
-        def get_vertex_response(input_text):
-            chat = model.start_chat(response_validation=False)
+#         def get_vertex_response(input_text):
+#             chat = model.start_chat(response_validation=False)
 
-            return chat.send_message(
-                [input_text],
-                generation_config=generation_config,
-                safety_settings=safety_settings
-            ).candidates[0].content.parts[0].text
+#             return chat.send_message(
+#                 [input_text],
+#                 generation_config=generation_config,
+#                 safety_settings=safety_settings
+#             ).candidates[0].content.parts[0].text
 
-        return [get_vertex_response(input_text) for input_text in tqdm(input_texts)]
+#         return [get_vertex_response(input_text) for input_text in tqdm(input_texts)]
         
 
 
@@ -141,15 +157,15 @@ class VllmResponseGenerator(ResponseGenerator):
 ######## Main ########
 
 SUPPORTED_MODELS = {
-    'gpt-4o-mini-2024-07-18': 'gpt',
-    'gpt-4o-2024-08-06': 'gpt',
-    'o1-preview-2024-09-12': 'gpt',
-    'o1-mini-2024-09-12': 'gpt',
-    'claude-3-haiku-20240307': 'claude',
-    'claude-3-5-sonnet-20240620': 'claude',
-    'claude-3-opus-20240229': 'claude',
-    'gemini-1.5-pro-002': 'gemini',
-    'gemini-1.5-flash-002': 'gemini',
+    'gpt-4o-mini-2024-07-18': 'openai',
+    'gpt-4o-2024-08-06': 'openai',
+    'o1-preview-2024-09-12': 'openai',
+    'o1-mini-2024-09-12': 'openai',
+    'claude-3-haiku-20240307': 'anthropic',
+    'claude-3-5-sonnet-20240620': 'anthropic',
+    'claude-3-opus-20240229': 'anthropic',
+    # 'gemini-1.5-pro-002': 'gemini',
+    # 'gemini-1.5-flash-002': 'gemini',
     'CohereForAI/c4ai-command-r-plus-4bit': 'vllm',
     'CohereForAI/c4ai-command-r-v01-4bit': 'vllm',
     'CohereForAI/aya-23-8B': 'vllm',
@@ -162,13 +178,14 @@ SUPPORTED_MODELS = {
     'Qwen/Qwen2.5-72B-Instruct-GPTQ-Int4': 'vllm',
     'hugging-quants/Meta-Llama-3.1-70B-Instruct-AWQ-INT4': 'vllm',
     'hugging-quants/Meta-Llama-3.1-8B-Instruct-AWQ-INT4': 'vllm',
-    'mistralai/Mistral-7B-Instruct-v0.3': 'vllm'
+    'mistralai/Mistral-7B-Instruct-v0.3': 'vllm',
+    'deepseek-ai/deepseek-llm-7b-chat': 'vllm'
 }
 
 MODEL_CLASS_DICT = {
-    "gpt": OpenaiResponseGenerator,
-    "claude": AnthropicResponseGenerator,
-    "gemini": VertexResponseGenerator,
+    "openai": OpenaiResponseGenerator,
+    "anthropic": AnthropicResponseGenerator,
+    # "gemini": VertexResponseGenerator,
     "vllm": VllmResponseGenerator,
 }
 
@@ -179,7 +196,7 @@ if __name__ == "__main__":
 
     model_name = args.model_name
 
-    assert model_name in SUPPORTED_MODELS, f"Model {model_name} not supported"
+    assert model_name in SUPPORTED_MODELS, f"Model {model_name} not supported, update SUPPORTED_MODELS dictionary in get_responses.py to support it."
 
     paths = sorted(glob("./data/*_input_data.jsonl"))
 
