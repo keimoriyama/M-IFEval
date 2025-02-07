@@ -148,22 +148,22 @@ Or, you can use `get_responses.py` to automatically generate the JSONL file in t
 
   Replace `{model_name}` with the exact model identifier you added.
 
-  > [!NOTE] 
-  > Before running the scripts, make sure to set your API keys and Hugging Face token as environment variables. For OpenAI or Anthropic, set the API key like this:  
-  >
-  >```bash
-  >export OPENAI_API_KEY="your_openai_api_key_here"
-  >export ANTHROPIC_API_KEY="your_anthropic_api_key_here"
-  >```
-  >
-  >For Hugging Face, set your token with:  
-  >
-  >```bash
-  >export HUGGINGFACE_TOKEN="your_huggingface_token_here"
-  >huggingface-cli login --token $HUGGINGFACE_TOKEN
-  >```
-  >
-  >Replace the placeholders with your actual keys. This will >ensure the scripts can access the necessary services.
+> [!NOTE] 
+> Before running the scripts, make sure to set your API keys and Hugging Face token as environment variables. For OpenAI or Anthropic, set the API key like this:  
+>
+>```bash
+>export OPENAI_API_KEY="your_openai_api_key_here"
+>export ANTHROPIC_API_KEY="your_anthropic_api_key_here"
+>```
+>
+>For Hugging Face, set your token with:  
+>
+>```bash
+>export HUGGINGFACE_TOKEN="your_huggingface_token_here"
+>huggingface-cli login --token $HUGGINGFACE_TOKEN
+>```
+>
+>Replace the placeholders with your actual keys. This will >ensure the scripts can access the necessary services.
 
 - **For *(yet)* unsupported providers  requiring API keys**:  
 
