@@ -18,14 +18,14 @@ M-IFEval currently supports **French**, **Japanese**, and **Spanish**, incorpora
 
 ## Table of Contents
 - [**🏆 Leader board**](#-leader-board)
-- [**⚙️ How to run**](#⚙️-how-to-run)
-  - [🌐 With Colab](#with-colab-🌐)
-  - [🖥️ Locally](#locally-🖥️)
+- [**⚙️ How to run**](#️-how-to-run)  
+  - [🌐 With Colab](#with-colab-)
+  - [🖥️ Locally](#locally-desktop_computer)
     - [Setup Instructions](#setup-instructions)
     - [Evaluate YOUR model](#evaluate-your-model)
-- [**Contributions 🤝**](#contributions-🤝)
-- [**📚 References**](#📚-reference)
-- [**📜 License**](#📜-license)
+- [**Contributions 🤝**](#contributions-)
+- [**📚 References**](#-reference)
+- [**📜 License**](#-license)
 
 ## 🏆 Leader board 
 The table below presents the average scores across all instructions for each language, sorted in ascending order by the mean scores across the languages supported by the M-IFEval benchmark (i.e., Spanish, French, and Japanese).
@@ -69,7 +69,7 @@ Click the badge to open the notebook in Colab:
 </a> 
 
 
-### Locally 🖥️
+### Locally :desktop_computer:
 
 If you prefer to run the evaluation directly on your machine, whether for computational reasons or other preferences, follow these steps:
 
