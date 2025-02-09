@@ -1,13 +1,9 @@
 # M-IFEval: Multilingual Instruction Following Evaluation
-<a href="https://github.com/lightblue-tech/M-IFEval/fork">
-        <img src="https://img.shields.io/badge/PRs-Welcome-purple?color=%23b304d6" height="20"/>
-    </a>
-<a href="https://colab.research.google.com/github/lightblue-tech/M-IFEval/blob/main/colab_mifeval_run.ipynb">
-    <img src="https://img.shields.io/badge/Colab-Demo-gray?logo=googlecolab&color=%23F9AB00" height="20"/>
-</a> 
-<a href="TO DO: ADD ARXIV LINK">
-        <img src="https://img.shields.io/badge/ArXiv-Preprint-gray?logo=arxiv&labelColor=%23B31B1B" height="20"/>
-    </a>    
+<span style="display: inline; gap: 5px;">
+<a href="https://github.com/lightblue-tech/M-IFEval/fork"><img src="https://img.shields.io/badge/PRs-Welcome-purple?color=%23b304d6" height="20"/></a>
+<a href="https://colab.research.google.com/github/lightblue-tech/M-IFEval/blob/main/colab_mifeval_run.ipynb"><img src="https://img.shields.io/badge/Colab-Demo-gray?logo=googlecolab&color=%23F9AB00" height="20"/></a> 
+<a href="TO DO: ADD ARXIV LINK"><img src="https://img.shields.io/badge/ArXiv-Preprint-gray?logo=arxiv&labelColor=%23B31B1B" height="20"/></a>    
+</span>   
 
 
 > This repository contains source code and data for [M-IFEval: Multilingual
@@ -21,7 +17,7 @@ Building upon the [Instruction Following Evaluation for Large Language Models](h
 M-IFEval currently supports **French**, **Japanese**, and **Spanish**, incorporating both general and language-specific instructions to provide a more comprehensive assessment of multilingual instruction adherence.
 
 ## Table of Contents
-- [**🏆 Leader board**](#🏆-leader-board)
+- [**🏆 Leader board**](#-leader-board)
 - [**⚙️ How to run**](#⚙️-how-to-run)
   - [🌐 With Colab](#with-colab-🌐)
   - [🖥️ Locally](#locally-🖥️)
