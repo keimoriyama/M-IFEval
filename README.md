@@ -2,12 +2,12 @@
 <span style="display: inline; gap: 5px;">
 <a href="https://github.com/lightblue-tech/M-IFEval/fork"><img src="https://img.shields.io/badge/PRs-Welcome-purple?color=%23b304d6" height="20"/></a>
 <a href="https://colab.research.google.com/github/lightblue-tech/M-IFEval/blob/main/colab_mifeval_run.ipynb"><img src="https://img.shields.io/badge/Colab-Demo-gray?logo=googlecolab&color=%23F9AB00" height="20"/></a> 
-<a href="TO DO: ADD ARXIV LINK"><img src="https://img.shields.io/badge/ArXiv-Preprint-gray?logo=arxiv&labelColor=%23B31B1B" height="20"/></a>    
+<a href="https://www.arxiv.org/abs/2502.04688"><img src="https://img.shields.io/badge/ArXiv-Preprint-gray?logo=arxiv&labelColor=%23B31B1B" height="20"/></a>    
 </span>   
 
 
 > This repository contains source code and data for [M-IFEval: Multilingual
-Instruction-Following Evaluation](TO DO: ADD ARXIV LINK)
+Instruction-Following Evaluation](https://www.arxiv.org/abs/2502.04688)
 
 
 Large language models (LLMs) are increasingly used in real-world applications that require understanding and executing user instructions accurately. Evaluating instruction following is crucial to ensure these models perform reliably across different tasks and languages.
@@ -196,7 +196,17 @@ If you have any feedback, concerns, or inquiries about the benchmark, feel free 
 If you use our work, please consider citing our preprint:
 
 ```
-TO DO: ADD PREPRINT
+@article{Dussolle2025MIFEval,
+  title={M-IFEval: Multilingual Instruction-Following Evaluation},
+  author={Antoine Dussolle and Andrea Cardena Díaz and Shota Sato and Peter Devine},
+  year={2025},
+  journal={arXiv preprint},
+  volume={arXiv:2502.04688},
+  eprint={2502.04688},
+  archivePrefix={arXiv},
+  primaryClass={cs.CL},
+  url={https://arxiv.org/abs/2502.04688}
+}
 ```
 
 As well, as the original IFEval paper's preprint:
