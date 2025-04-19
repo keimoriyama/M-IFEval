@@ -14,6 +14,7 @@
 # limitations under the License.
 
 """Registry of all instructions."""
+
 from instructions import en_instructions
 from instructions import ja_instructions
 from instructions import es_instructions
@@ -61,8 +62,7 @@ EN_INSTRUCTION_DICT = {
     # TODO(jeffreyzhou): Pre-create paragraph or use prompt to replace
     # _CONTENT + "rephrase_paragraph": instructions.RephraseParagraph,
     _FORMAT + "constrained_response": en_instructions.ConstrainedResponseChecker,
-    _FORMAT + "number_highlighted_sections": (
-        en_instructions.HighlightSectionChecker),
+    _FORMAT + "number_highlighted_sections": (en_instructions.HighlightSectionChecker),
     _FORMAT + "multiple_sections": en_instructions.SectionChecker,
     # TODO(tianjianlu): Re-enable rephrasing with preprocessing the message.
     # _FORMAT + "rephrase": instructions.RephraseChecker,
@@ -75,10 +75,8 @@ EN_INSTRUCTION_DICT = {
     _STARTEND + "end_checker": en_instructions.EndChecker,
     _CHANGE_CASES
     + "capital_word_frequency": en_instructions.CapitalWordFrequencyChecker,
-    _CHANGE_CASES
-    + "english_capital": en_instructions.CapitalLettersEnglishChecker,
-    _CHANGE_CASES
-    + "english_lowercase": en_instructions.LowercaseLettersEnglishChecker,
+    _CHANGE_CASES + "english_capital": en_instructions.CapitalLettersEnglishChecker,
+    _CHANGE_CASES + "english_lowercase": en_instructions.LowercaseLettersEnglishChecker,
     _PUNCTUATION + "no_comma": en_instructions.CommaChecker,
     _STARTEND + "quotation": en_instructions.QuotationChecker,
 }
@@ -102,8 +100,7 @@ JA_INSTRUCTION_DICT = {
     # TODO(jeffreyzhou): Pre-create paragraph or use prompt to replace
     # _CONTENT + "rephrase_paragraph": instructions.RephraseParagraph,
     _FORMAT + "constrained_response": ja_instructions.ConstrainedResponseChecker,
-    _FORMAT + "number_highlighted_sections": (
-        ja_instructions.HighlightSectionChecker),
+    _FORMAT + "number_highlighted_sections": (ja_instructions.HighlightSectionChecker),
     _FORMAT + "multiple_sections": ja_instructions.SectionChecker,
     # TODO(tianjianlu): Re-enable rephrasing with preprocessing the message.
     # _FORMAT + "rephrase": instructions.RephraseChecker,
@@ -142,8 +139,7 @@ ES_INSTRUCTION_DICT = {
     _CONTENT + "postscript": es_instructions.PostscriptChecker,
     _FORMAT + "number_bullet_lists": es_instructions.BulletListChecker,
     _FORMAT + "constrained_response": es_instructions.ConstrainedResponseChecker,
-    _FORMAT + "number_highlighted_sections": (
-        es_instructions.HighlightSectionChecker),
+    _FORMAT + "number_highlighted_sections": (es_instructions.HighlightSectionChecker),
     _FORMAT + "multiple_sections": es_instructions.SectionChecker,
     _FORMAT + "json_format": es_instructions.JsonFormat,
     _FORMAT + "title": es_instructions.TitleChecker,
@@ -156,10 +152,8 @@ ES_INSTRUCTION_DICT = {
     _STARTEND + "quotation": es_instructions.QuotationChecker,
     _CHANGE_CASES
     + "capital_word_frequency": es_instructions.CapitalWordFrequencyChecker,
-    _CHANGE_CASES
-    + "spanish_capital": es_instructions.CapitalLettersSpanishChecker,
-    _CHANGE_CASES
-    + "spanish_lowercase": es_instructions.LowercaseLettersSpanishChecker,
+    _CHANGE_CASES + "spanish_capital": es_instructions.CapitalLettersSpanishChecker,
+    _CHANGE_CASES + "spanish_lowercase": es_instructions.LowercaseLettersSpanishChecker,
     _SPECIAL_CHARACTER + "enie": es_instructions.EnieChecker,
     _SPECIAL_CHARACTER + "tildes": es_instructions.TildesChecker,
     _SPECIAL_CHARACTER + "dieresis": es_instructions.DieresisChecker,
@@ -172,20 +166,21 @@ FR_INSTRUCTION_DICT = {
     # _KEYWORD + "key_sentences": instructions.KeySentenceChecker,
     _KEYWORD + "forbidden_words": fr_instructions.ForbiddenWords,
     _KEYWORD + "letter_frequency": fr_instructions.LetterFrequencyChecker,
-    _LANGUAGE + "response_language": fr_instructions.ResponseLanguageChecker, #ok
-    _LENGTH + "number_sentences": fr_instructions.NumberOfSentences, #ok
+    _LANGUAGE + "response_language": fr_instructions.ResponseLanguageChecker,  # ok
+    _LENGTH + "number_sentences": fr_instructions.NumberOfSentences,  # ok
     _LENGTH + "number_paragraphs": fr_instructions.ParagraphChecker,
     _LENGTH + "number_words": fr_instructions.NumberOfWords,
     _LENGTH + "nth_paragraph_first_word": fr_instructions.ParagraphFirstWordCheck,
-    _CONTENT + "number_placeholders": fr_instructions.PlaceholderChecker, #ok
+    _CONTENT + "number_placeholders": fr_instructions.PlaceholderChecker,  # ok
     _CONTENT + "postscript": fr_instructions.PostscriptChecker,
-    _FORMAT + "number_bullet_lists": fr_instructions.BulletListChecker, #ok
+    _FORMAT + "number_bullet_lists": fr_instructions.BulletListChecker,  # ok
     # TODO(jeffreyzhou): Pre-create paragraph or use prompt to replace
     # _CONTENT + "rephrase_paragraph": instructions.RephraseParagraph,
-    _FORMAT + "constrained_response": fr_instructions.ConstrainedResponseChecker, #ok
+    _FORMAT + "constrained_response": fr_instructions.ConstrainedResponseChecker,  # ok
     _FORMAT + "number_highlighted_sections": (
-        fr_instructions.HighlightSectionChecker), #ok
-    _FORMAT + "multiple_sections": fr_instructions.SectionChecker, #ok 
+        fr_instructions.HighlightSectionChecker
+    ),  # ok
+    _FORMAT + "multiple_sections": fr_instructions.SectionChecker,  # ok
     # TODO(tianjianlu): Re-enable rephrasing with preprocessing the message.
     # _FORMAT + "rephrase": instructions.RephraseChecker,
     _FORMAT + "json_format": fr_instructions.JsonFormat,
@@ -197,15 +192,13 @@ FR_INSTRUCTION_DICT = {
     _STARTEND + "end_checker": fr_instructions.EndChecker,
     _CHANGE_CASES
     + "capital_word_frequency": fr_instructions.CapitalWordFrequencyChecker,
-    _CHANGE_CASES
-    + "french_capital": fr_instructions.CapitalLettersFrenchChecker,
-    _CHANGE_CASES
-    + "french_lowercase": fr_instructions.LowercaseLettersFrenchChecker,
+    _CHANGE_CASES + "french_capital": fr_instructions.CapitalLettersFrenchChecker,
+    _CHANGE_CASES + "french_lowercase": fr_instructions.LowercaseLettersFrenchChecker,
     _PUNCTUATION + "no_comma": fr_instructions.CommaChecker,
     _STARTEND + "quotation": fr_instructions.QuotationChecker,
     # French addition
     _SPECIAL_CHARACTER + "ethel_or_cedilla": fr_instructions.ForbiddenChar,
-    #_CONTENT + "informal_negation": fr_instructions.ExcludeFormalNegation,
+    # _CONTENT + "informal_negation": fr_instructions.ExcludeFormalNegation,
     _CONTENT + "informal_address": fr_instructions.UseInformalAddress,
     _SPECIAL_CHARACTER + "no_accents": fr_instructions.NoAccents,
     _SPECIAL_CHARACTER + "accents": fr_instructions.AccentsChecker,

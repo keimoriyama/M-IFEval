@@ -139,7 +139,7 @@ Or, you can use `get_responses.py` to automatically generate the JSONL file in t
   Once the model is added, generate responses by running:  
   
     ```bash
-    python3 -m get_responses.py --model_name {model_name}
+    python3 -m get_responses --model_name {model_name}
     ```  
 
   Replace `{model_name}` with the exact model identifier you added.
