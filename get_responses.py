@@ -183,6 +183,8 @@ SUPPORTED_MODELS = {
     "hugging-quants/Meta-Llama-3.1-8B-Instruct-AWQ-INT4": "vllm",
     "mistralai/Mistral-7B-Instruct-v0.3": "vllm",
     "deepseek-ai/deepseek-llm-7b-chat": "vllm",
+    "../nemo-to-hf/llm-jp-1.8b/sft-1IIL1ac757/": "vllm",
+    "../nemo-to-hf/llm-jp-1.8b/sft-g7apz4KduE/": "vllm"
 }
 
 MODEL_CLASS_DICT = {
@@ -204,10 +206,8 @@ if __name__ == "__main__":
     )
 
     paths = sorted(glob("./data/*_input_data.jsonl"))
-    import ipdb;ipdb.set_trace()
     model_class = MODEL_CLASS_DICT[SUPPORTED_MODELS[model_name]]
     response_generator = model_class(model_name)
-
     for path in paths:
         print(path + " - " + model_name)
         ds = load_dataset("json", data_files={"train": path}, split="train")

@@ -272,6 +272,9 @@ def main(argv):
         entity="llm-jp",
         project="0047_tuning_experiment",
         name="eval M-IFEval",
+        config = {
+            "model_name_or_path" : _INPUT_RESPONSE_DATA.value
+            }
     )
     kind = ["strict", "loose"]
     i = 0
