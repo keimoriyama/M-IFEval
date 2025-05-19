@@ -13,11 +13,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 import argparse
+import os
 from glob import glob
-from tqdm.auto import tqdm
+
 from datasets import load_dataset
+from tap import Tap
+from tqdm.auto import tqdm
+
+
+class ArgumentParser(Tap):
+    model_name: str
+    model_modules: Literal["vllm", "openai", "anthoropic"] = "vllm"
 
 
 class ResponseGenerator:
@@ -184,7 +191,7 @@ SUPPORTED_MODELS = {
     "mistralai/Mistral-7B-Instruct-v0.3": "vllm",
     "deepseek-ai/deepseek-llm-7b-chat": "vllm",
     "../nemo-to-hf/llm-jp-1.8b/sft-1IIL1ac757/": "vllm",
-    "../nemo-to-hf/llm-jp-1.8b/sft-g7apz4KduE/": "vllm"
+    "../nemo-to-hf/llm-jp-1.8b/sft-g7apz4KduE/": "vllm",
 }
 
 MODEL_CLASS_DICT = {
@@ -195,18 +202,17 @@ MODEL_CLASS_DICT = {
 }
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--model_name", type=str, required=True)
-    args = parser.parse_args()
+    args = ArgumentParser.parse_args()
 
     model_name = args.model_name
+    model_modules = args.model_modules
 
-    assert model_name in SUPPORTED_MODELS, (
-        f"Model {model_name} not supported, update SUPPORTED_MODELS dictionary in get_responses.py to support it."
-    )
+    # assert model_name in SUPPORTED_MODELS, (
+    #     f"Model {model_name} not supported, update SUPPORTED_MODELS dictionary in get_responses.py to support it."
+    # )
 
     paths = sorted(glob("./data/*_input_data.jsonl"))
-    model_class = MODEL_CLASS_DICT[SUPPORTED_MODELS[model_name]]
+    model_class = MODEL_CLASS_DICT[model_modules]
     response_generator = model_class(model_name)
     for path in paths:
         print(path + " - " + model_name)
