@@ -16,6 +16,7 @@
 import argparse
 import os
 from glob import glob
+from typing import Literal
 
 from datasets import load_dataset
 from tap import Tap
@@ -202,7 +203,7 @@ MODEL_CLASS_DICT = {
 }
 
 if __name__ == "__main__":
-    args = ArgumentParser.parse_args()
+    args = ArgumentParser().parse_args()
 
     model_name = args.model_name
     model_modules = args.model_modules
