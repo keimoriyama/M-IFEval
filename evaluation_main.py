@@ -21,29 +21,35 @@ import json
 import os
 from typing import Dict, Optional, Sequence, Union
 
-from absl import app
-from absl import flags
-from absl import logging
-
-import wandb
 import polars as pl
+import wandb
+from absl import app, flags, logging
+from tap import Tap
+
 import instructions_registry
 
 
-_INPUT_DATA = flags.DEFINE_string(
-    "input_data", None, "path to input data", required=True
-)
+class ArgumentaParser(Tap):
+    input_data: str
+    input_response_data: str
+    output_dir: str
+    wandb_name: str
 
-_INPUT_RESPONSE_DATA = flags.DEFINE_string(
-    "input_response_data", None, "path to input response data", required=False
-)
 
-_OUTPUT_DIR = flags.DEFINE_string(
-    "output_dir",
-    None,
-    "Output directory for inference and eval results.",
-    required=True,
-)
+# _INPUT_DATA = flags.DEFINE_string(
+#     "input_data", None, "path to input data", required=True
+# )
+#
+# _INPUT_RESPONSE_DATA = flags.DEFINE_string(
+#     "input_response_data", None, "path to input response data", required=False
+# )
+#
+# _OUTPUT_DIR = flags.DEFINE_string(
+#     "output_dir",
+#     None,
+#     "Output directory for inference and eval results.",
+#     required=True,
+# )
 
 
 @dataclasses.dataclass
@@ -265,16 +271,14 @@ def print_report(outputs):
 def main(argv):
     if len(argv) > 1:
         raise app.UsageError("Too many command-line arguments.")
-
-    inputs = read_prompt_list(_INPUT_DATA.value)
-    prompt_to_response = read_prompt_to_response_dict(_INPUT_RESPONSE_DATA.value)
+    args = ArgumentaParser().parse_args()
+    inputs = read_prompt_list(args.input_data)
+    prompt_to_response = read_prompt_to_response_dict(args.input_response_data)
     wandb.init(
         entity="llm-jp",
         project="0047_tuning_experiment",
-        name="eval M-IFEval",
-        config = {
-            "model_name_or_path" : _INPUT_RESPONSE_DATA.value
-            }
+        name=args.wandb_name,
+        config={"model_name_or_path": args.input_response_data},
     )
     kind = ["strict", "loose"]
     i = 0
@@ -292,7 +296,7 @@ def main(argv):
         accuracy = sum(follow_all_instructions) / len(outputs)
         logging.info("Accuracy: %f", accuracy)
 
-        output_file_name = os.path.join(_OUTPUT_DIR.value, output_file_name + ".jsonl")
+        output_file_name = os.path.join(args.output_dir, output_file_name + ".jsonl")
         write_outputs(output_file_name, outputs)
         logging.info("Generated: %s", output_file_name)
 
