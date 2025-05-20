@@ -269,9 +269,10 @@ def print_report(outputs):
 
 
 def main(argv):
+    args = ArgumentaParser().parse_args()
+
     if len(argv) > 1:
         raise app.UsageError("Too many command-line arguments.")
-    args = ArgumentaParser().parse_args()
     inputs = read_prompt_list(args.input_data)
     prompt_to_response = read_prompt_to_response_dict(args.input_response_data)
     wandb.init(
