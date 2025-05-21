@@ -7,6 +7,8 @@ requires-python = ">=3.12"
 dependencies = [
     "datasets>=3.6.0",
     "immutabledict>=4.2.1",
+    "ja-sentence-segmenter>=0.0.2",
+    "janome>=0.5.0",
     "langdetect>=1.0.9",
     "nltk>=3.9.1",
     "polars>=1.29.0",

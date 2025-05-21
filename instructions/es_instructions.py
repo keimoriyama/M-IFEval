@@ -17,18 +17,17 @@
 
 import collections
 import json
+import logging
 import random
 import re
 import string
+import unicodedata
 from typing import Dict, Optional, Sequence, Union
 
-from absl import logging
 import langdetect
-import unicodedata
 import spacy
 
 from instruction_utils import es_instructions_util
-
 
 _InstructionArgsDtype = Optional[Dict[str, Union[int, str, Sequence[str]]]]
 
