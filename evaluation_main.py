@@ -268,7 +268,7 @@ def print_report(outputs):
     return results
 
 
-def main(argv):
+def main():
     args = ArgumentaParser().parse_args()
 
     inputs = read_prompt_list(args.input_data)
@@ -313,5 +313,6 @@ def main(argv):
         i += 1
 
 
+
 if __name__ == "__main__":
-    app.run(main)
+    main()
