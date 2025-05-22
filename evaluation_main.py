@@ -214,7 +214,7 @@ def read_prompt_to_response_dict(input_jsonl_filename):
     return return_dict
 
 
-def print_report(outputs):
+def print_report(outputs) -> list[dict[str, float]]:
     """Prints a report on accuracy scores."""
 
     prompt_total = 0
@@ -304,14 +304,13 @@ def main():
         print(f"{output_file_name} Accuracy Scores:")
 
         # ここで、outputの処理をしていそう
-        res = print_report(outputs)
+        res = print_report(outputs).append({f"{kind[i]}_mean_accuracy": accuracy})
         res_df = pl.DataFrame(res)
         df = pl.concat([df, res_df], how="vertical")
         log_table = wandb.Table(columns=df.columns, data=df.to_numpy())
         wandb.log({f"score_{kind[i]}": log_table})
 
         i += 1
-
 
 
 if __name__ == "__main__":
