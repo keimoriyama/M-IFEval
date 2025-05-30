@@ -253,13 +253,16 @@ def print_report(outputs) -> list[dict[str, float]]:
             if followed_or_not:
                 tier1_correct[instruction_id] += 1
 
+    results = []
     print(f"prompt-level: {prompt_correct / prompt_total}")
     print(f"instruction-level: {instruction_correct / instruction_total}")
+    results.append({"instruction_id": "prompt-level-accuracy", "accuracy":prompt_correct / prompt_total})
+    results.append({"instruction_id": "instruction_accuracy", "accuracy":instruction_correct / instruction_total})
     print()
-    results = []
     for instruction_id in sorted(tier0_total.keys()):
         accuracy = tier0_correct[instruction_id] / tier0_total[instruction_id]
         print(f"{instruction_id} {accuracy}")
+        results.append({"instruction_id": instruction_id, "accuracy": accuracy})
     print()
     for instruction_id in sorted(tier1_total.keys()):
         accuracy = tier1_correct[instruction_id] / tier1_total[instruction_id]
@@ -304,11 +307,15 @@ def main():
         print(f"{output_file_name} Accuracy Scores:")
 
         # ここで、outputの処理をしていそう
-        res = print_report(outputs).append({f"{kind[i]}_mean_accuracy": accuracy})
+        res = print_report(outputs)
+        res.append({"instruction_id": f"{kind[i]}_mean_accuracy", "accuracy": accuracy})
         res_df = pl.DataFrame(res)
         df = pl.concat([df, res_df], how="vertical")
         log_table = wandb.Table(columns=df.columns, data=df.to_numpy())
         wandb.log({f"score_{kind[i]}": log_table})
+        for ri in res:
+            key = ri['instruction_id']
+            wandb.log({f"{kind[i]}_{key}": ri['accuracy']})
 
         i += 1
 
