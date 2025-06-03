@@ -306,16 +306,16 @@ def main():
 
         # ここで、outputの処理をしていそう
         res = print_report(outputs)
-        #res.append({"instruction_id": f"{kind[i]}_mean_accuracy", "accuracy": accuracy})
-        #res_df = pl.DataFrame(res)
-        #df = pl.concat([df, res_df], how="vertical")
-        #log_table = wandb.Table(columns=df.columns, data=df.to_numpy())
-        #wandb.log({f"score_{kind[i]}": log_table})
-        #for ri in res:
-        #    key = ri['instruction_id']
-        #    wandb.log({f"{kind[i]}_{key}": ri['accuracy']})
+        res.append({"instruction_id": f"{kind[i]}_mean_accuracy", "accuracy": accuracy})
+        res_df = pl.DataFrame(res)
+        df = pl.concat([df, res_df], how="vertical")
+        log_table = wandb.Table(columns=df.columns, data=df.to_numpy())
+        wandb.log({f"score_{kind[i]}": log_table})
+        for ri in res:
+           key = ri['instruction_id']
+           wandb.log({f"{kind[i]}_{key}": ri['accuracy']})
 
-        #i += 1
+        i += 1
 
 
 if __name__ == "__main__":
