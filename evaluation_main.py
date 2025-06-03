@@ -118,11 +118,9 @@ def test_instruction_following_strict(
     response = prompt_to_response[inp.prompt]
     instruction_list = inp.instruction_id_list
     is_following_list = []
-
     for index, instruction_id in enumerate(instruction_list):
         instruction_cls = instructions_registry.INSTRUCTION_DICT[instruction_id]
         instruction = instruction_cls(instruction_id)
-
         instruction.build_description(**inp.kwargs[index])
         args = instruction.get_instruction_args()
         if args and "prompt" in args:
@@ -277,10 +275,10 @@ def main():
     inputs = read_prompt_list(args.input_data)
     prompt_to_response = read_prompt_to_response_dict(args.input_response_data)
     wandb.init(
-        entity="llm-jp",
-        project="0047_tuning_experiment",
-        name=args.wandb_name,
-        config={"model_name_or_path": args.input_response_data},
+       entity="llm-jp",
+       project="0047_tuning_experiment",
+       name=args.wandb_name,
+       config={"model_name_or_path": args.input_response_data},
     )
     kind = ["strict", "loose"]
     i = 0
@@ -308,16 +306,16 @@ def main():
 
         # ここで、outputの処理をしていそう
         res = print_report(outputs)
-        res.append({"instruction_id": f"{kind[i]}_mean_accuracy", "accuracy": accuracy})
-        res_df = pl.DataFrame(res)
-        df = pl.concat([df, res_df], how="vertical")
-        log_table = wandb.Table(columns=df.columns, data=df.to_numpy())
-        wandb.log({f"score_{kind[i]}": log_table})
-        for ri in res:
-            key = ri['instruction_id']
-            wandb.log({f"{kind[i]}_{key}": ri['accuracy']})
+        #res.append({"instruction_id": f"{kind[i]}_mean_accuracy", "accuracy": accuracy})
+        #res_df = pl.DataFrame(res)
+        #df = pl.concat([df, res_df], how="vertical")
+        #log_table = wandb.Table(columns=df.columns, data=df.to_numpy())
+        #wandb.log({f"score_{kind[i]}": log_table})
+        #for ri in res:
+        #    key = ri['instruction_id']
+        #    wandb.log({f"{kind[i]}_{key}": ri['accuracy']})
 
-        i += 1
+        #i += 1
 
 
 if __name__ == "__main__":

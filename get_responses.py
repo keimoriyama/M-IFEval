@@ -219,6 +219,6 @@ if __name__ == "__main__":
         print(path + " - " + model_name)
         ds = load_dataset("json", data_files={"train": path}, split="train")
         ds = ds.add_column("response", response_generator.get_response(ds["prompt"]))
-        ds.select_columns(["prompt", "response"]).to_json(
-            path[:-10] + "response_data_" + model_name.replace("/", "__") + ".jsonl"
+        ds.select_columns(["prompt", "response", "instruction_id_list"]).to_json(
+            path[:-10] + "response_data_" + model_name.replace("/", "__") + ".jsonl",force_ascii=False
         )
